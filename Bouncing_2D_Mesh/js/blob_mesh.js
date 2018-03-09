@@ -56,9 +56,6 @@ class Blob {
         this.points = [];
 
         var rotation_increment = 360/num_points;
-        var trans_rot = mat3();
-        trans_rot[2][0] = center[0];
-        trans_rot[2][1] = center[1];
 
         var start_pos = add(center, vec3(rad, 0, 1));
         for (var i = 0; i < num_points; i++) {
