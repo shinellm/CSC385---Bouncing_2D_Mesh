@@ -35,7 +35,7 @@ function fill_buffer(buffer, array){
 }
 
 function init_blob() {
-    
+
 }
 
 // Renders the frame.
