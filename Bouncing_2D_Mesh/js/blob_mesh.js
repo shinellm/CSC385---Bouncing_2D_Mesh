@@ -58,7 +58,7 @@ class Blob {
         this.colors = [];  //The colors of the pixels to be rendered
 
         this.pos.push(center);
-        this.colors.push(COLOR_GREEN);
+        this.colors.push(vec4(0,1,0,1));
 
         var rotation_increment = 360/num_points;
 
@@ -73,7 +73,7 @@ class Blob {
             point.index = i;
             this.points.push(point);
             this.pos.push(point.pos);
-            this.colors.push(COLOR_RED);
+            this.colors.push(vec4(1,0,0,1));
         }
 
         //For each outer point, pushes the indices of its

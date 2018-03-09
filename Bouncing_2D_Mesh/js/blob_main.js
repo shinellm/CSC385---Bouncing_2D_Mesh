@@ -14,8 +14,8 @@ function render(){
         var blob = blob_world.get_blob();
         mM = mult(translate(blob.get_center().pos[0], blob.get_center().pos[1], 0), mM);
         gl.uniformMatrix4fv(mMV, false, flatten(mM));
-        enable_attribute_buffer(vPosition, pos_buffer, 3);
-        enable_attribute_buffer(vColor, color_buffer, 3);
+        enable_attribute_buffer(vPosition, pos_buffer, 4);
+        enable_attribute_buffer(vColor, color_buffer, 4);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, num_vertices);
         requestAnimFrame(render);
     }, 10);
@@ -24,8 +24,12 @@ function render(){
 
 function init_blob_world() {
     var blob = blob_world.get_blob();
-    fill_buffer(pos_buffer, blob.get_pos());
-    fill_buffer(color_buffer, blob.get_color());
+    var pos = blob.get_pos();
+    pos.push(pos[1]);
+    var colors = blob.get_color();
+    colors.push(colors[1]);
+    fill_buffer(pos_buffer, pos);
+    fill_buffer(color_buffer, colors);
     num_vertices = blob.get_pos().length;
 }
 
@@ -49,7 +53,7 @@ function init(){
     vColor = gl.getAttribLocation(program, "vColor");
     mMV = gl.getUniformLocation(program, "mM");
 
-    var blob = new Blob(vec4(2,1,0,1), 3, 8);
+    var blob = new Blob(vec4(0,0,0,1), 0.25, 8);
     blob_world = new BlobWorld(blob);
 
     pos_buffer = gl.createBuffer();
