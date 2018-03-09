@@ -68,6 +68,19 @@ class Blob {
             this.points.push(point);
         }
 
+        //For each outer point, pushes the indices of its
+        //adjacent neighbors onto the points list of neighbors,
+        //for later reference.
+        for (var i = 0; i < num_points; i++) {
+            if (i == 0) {
+                this.points[i].neighbors.push((num_points - 1) % num_points);
+            } else {
+                this.points[i].neighbors.push((i - 1) % num_points);
+            }
+
+            this.points[i].neighbors.push((i + 1) % num_points);
+        }
+
     }
 
     //helper function for calculating initial
