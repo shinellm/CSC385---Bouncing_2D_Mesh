@@ -42,7 +42,7 @@ class Blob {
      * Forms a blob from a specified
      * center, a radius, and the number
      * of point masses on its perimeter
-     * @param center {vec3} the center of the blob
+     * @param center {vec4} the center of the blob
      * @param rad {num} this blob's radius, when the
      * blob is represented as a circle, before any
      * forces act upon it
@@ -58,18 +58,22 @@ class Blob {
         this.colors = [];  //The colors of the pixels to be rendered
 
         this.pos.push(center);
-        this.colors.push(COLOR_RED);
+        this.colors.push(COLOR_GREEN);
 
         var rotation_increment = 360/num_points;
 
-        var start_pos = add(center, vec3(rad, 0, 1));
+        var start_pos = add(center, vec4(rad, 0, 0, 0));
+        var trans_rot = mat4();
+        mult(translate(this.center.pos[0], this.center.pos[1], 0), trans_rot)
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
-            var rot_mat = this.get_rot_matrix(ang_rot);
-            var pos = mult(rot_mat, start_pos);
+            var pos = mult(rotateZ(ang_rot), start_pos);
+            pos = mult(trans_rot, pos);
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
+            this.pos.push(point.pos);
+            this.colors.push(COLOR_RED);
         }
 
         //For each outer point, pushes the indices of its
@@ -85,24 +89,6 @@ class Blob {
             this.points[i].neighbors.push((i + 1) % num_points);
         }
 
-        for (var i = 0; i < num_points; i++) {
-            this.pos.push(this.points[i].pos);
-            this.colors.push(COLOR_RED);
-        }
-
-    }
-
-    //helper function for calculating initial
-    //position of each outer point of Blob
-    get_rot_matrix(angle) {
-        var rot_matrix = mat3();
-        var c = Math.cos( radians(angle) );
-        var s = Math.sin( radians(angle) );
-        rot_matrix[0][0] = c;
-        rot_matrix[1][1] = c;
-        rot_matrix[0][1] = -s;
-        rot_matrix[1][0] = s;
-        return rot_matrix;
     }
 
 
@@ -120,5 +106,27 @@ class Blob {
         return this.pos;
     }
 
+    get_center() {
+        return this.center;
+    }
+
+}
+
+class BlobWorld {
+    /*
+     * The world in which the Blob exists.
+     * Includes the blob and the pixel array
+     * from the program, that actually colors
+     * the appropriate pixels, based on the
+     * locations of the point masses of the blob.
+     * @param {Blob} the Blob this world contains
+     */
+    constructor(blob) {
+        this.blob = blob;
+    }
+
+    get_blob() {
+        return this.blob;
+    }
 }
 
