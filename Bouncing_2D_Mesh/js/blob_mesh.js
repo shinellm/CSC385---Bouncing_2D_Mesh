@@ -53,7 +53,12 @@ class Blob {
         this.center = new Point(center);
         this.rad = rad;
         this.num_points = num_points;
-        this.points = [];
+        this.points = [];  //The outer points that track collision and user interaction
+        this.pos = [];  //The positions of all points on the blobs perimeter and interior to color
+        this.colors = [];  //The colors of the pixels to be rendered
+
+        this.pos.push(center);
+        this.colors.push(COLOR_RED);
 
         var rotation_increment = 360/num_points;
 
@@ -62,7 +67,6 @@ class Blob {
             var ang_rot = i * rotation_increment;
             var rot_mat = this.get_rot_matrix(ang_rot);
             var pos = mult(rot_mat, start_pos);
-            pos = mult(trans_rot, pos);
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
@@ -79,6 +83,11 @@ class Blob {
             }
 
             this.points[i].neighbors.push((i + 1) % num_points);
+        }
+
+        for (var i = 0; i < num_points; i++) {
+            this.pos.push(this.points[i].pos);
+            this.colors.push(COLOR_RED);
         }
 
     }
@@ -103,6 +112,13 @@ class Blob {
 
     }
 
+    get_color() {
+        return this.colors;
+    }
+
+    get_pos() {
+        return this.pos;
+    }
 
 }
 
