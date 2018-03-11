@@ -126,7 +126,7 @@ class Blob {
      * at time t.
      */
     special_dot(vec, mat) {
-        var pos = vec4(0);
+        var pos = vec4(0,0,0,0);
 
         for (var i = 0; i < 4; i++) {
             var total = 0;
@@ -135,6 +135,7 @@ class Blob {
             }
             pos[i] += total;
         }
+        pos[2] = 0;
         pos[3] = 1;
 
         return pos;
@@ -163,28 +164,23 @@ class Blob {
 
             var points = [p0, p1, p2, p3];
             for (var i = 0; i < 4; i++) {
-                var b = [Math.pow((1 - u[i]), 3), 3 * u[i] * Math.pow((1 - u[i]), 2),
-                    3 * Math.pow(u[i], 2) * (1 - u[i]), Math.pow(u[i], 3)];
+                var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
+                var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
+                var b = this.special_dot(ts,M_b);
                 var pos = this.special_dot(b, points);
                 this.pos.push(pos);
                 this.colors.push(vec4(1,0,0,1));
             }
         } else {
-            var p11 = add(p0,scale(t,subtract(p1,p0)));
-            var p21 = add(p1,scale(t,subtract(p2,p1)));
-            var p31 = add(p2,scale(t,subtract(p3,p2)));
-            var p12 = add(p11,scale(t,subtract(p21,p11)));
-            var p22 = add(p21,scale(t,subtract(p31,p21)));
-            var p13 = add(p12,scale(t,subtract(p22,p12)));
+            var p11 = add(scale(1 - t, p0), scale(t, p1));
+            var p21 = add(scale(1 - t, p1), scale(t, p2));
+            var p31 = add(scale(1 - t, p2), scale(t, p3));
+            var p12 = add(scale(1 - t, p11), scale(t, p21));
+            var p22 = add(scale(1 - t, p21), scale(t, p31));
+            var p13 = add(scale(1 - t, p12), scale(t, p22));
 
-            this.pos.push(p0);
-            this.colors.push(vec4(1,0,0,1));
             this.deCasteljau(p0, p11, p12, p13);
-            this.pos.push(p13);
-            this.colors.push(vec4(1,0,0,1));
             this.deCasteljau(p13, p22, p31, p3);
-            this.pos.push(p3);
-            this.colors.push(vec4(1,0,0,1));
         }
     }
 
@@ -203,7 +199,7 @@ class Blob {
             var p0 = point0.pos;
             var p1 = inner_controls[0];
             var p2 = inner_controls[1];
-            var p3 = point3.pos
+            var p3 = point3.pos;
             this.deCasteljau(p0, p1, p2, p3);
             index += 2;
         }
