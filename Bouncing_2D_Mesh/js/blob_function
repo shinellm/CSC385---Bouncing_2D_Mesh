@@ -1,0 +1,28 @@
+/*
+ * check if an edge collides with a boundary
+ * param: the first edge that collides with the boundary
+ */
+function collide(edge) {
+  
+}
+
+/*
+ * takes the initial and final position of the blob(mouse click)
+ * conputes velocity of the blob after release
+ */
+function projection (init_pos, final_pos) {
+
+}
+
+//applies gravity to an object
+function gravity() {
+
+}
+
+/*
+ * calculates spring force of the edge
+ * /
+function spring_force (edge) {
+
+}
+
