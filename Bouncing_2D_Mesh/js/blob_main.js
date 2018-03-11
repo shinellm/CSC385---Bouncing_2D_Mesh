@@ -19,7 +19,7 @@ function render(){
         blob_world.render();
         blob_world.free_fall(gravity);
         //blob_world.evolve(HEIGHT, WIDTH);
-        //loop();
+
         requestAnimFrame(render);
     }, 100);
 }
