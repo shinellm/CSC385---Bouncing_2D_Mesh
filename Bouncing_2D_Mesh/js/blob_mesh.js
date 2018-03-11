@@ -117,31 +117,6 @@ class Blob {
     }
 
     /*
-     * Calculates the positions of
-     * the control points of the control
-     * cage for the current portion of this
-     * Blob's cubic curve.
-     * @param p0 {vec4} the "P0" of the current
-     * control cage
-     * @param p3 {vec4} the "P3"
-     * @return [pos1, pos2] the second and third
-     * positions of the second and third points
-     * on the cage.
-     */
-    calculate_controls(p0, p3) {
-
-        var comp1 = subtract(p0.pos, p0.right_neighbor.pos);
-        var vect1 = normalize(add(subtract(p0.pos, p0.right_neighbor.pos), subtract(p0.left_neighbor.pos, p0.pos)));
-        var pos1 = add(p0.pos,scale(-dot(vect1, comp1)/dot(vect1,vect1),vect1));
-
-        var comp2 = subtract(p3.pos, p3.left_neighbor.pos);
-        var vect2 = normalize(add(subtract(p3.pos, p3.left_neighbor.pos), subtract(p3.right_neighbor.pos, p3.pos)));
-        var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
-
-        return [pos1, pos2];
-    }
-
-    /*
      * Recursively creates new, smaller
      * control cages to add new positions
      * along this Blob's cubic curve.
@@ -307,4 +282,3 @@ class BlobWorld {
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
     }
 }
-
