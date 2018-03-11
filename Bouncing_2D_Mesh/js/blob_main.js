@@ -10,8 +10,8 @@ function render(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         var mM = mat4();
-        var blob = blob_world.get_blob();
-        mM = mult(translate(blob.get_center().pos[0], blob.get_center().pos[1], 0), mM);
+        var blobbo = blob_world.get_blob();
+        mM = mult(translate(blobbo.get_center().pos[0], blobbo.get_center().pos[1], 0), mM);
         gl.uniformMatrix4fv(mMV, false, flatten(mM));
         enable_attribute_buffer(vPosition, pos_buffer, 4);
         enable_attribute_buffer(vColor, color_buffer, 4);
@@ -22,14 +22,15 @@ function render(){
 }
 
 function init_blob_world() {
-    var blob = blob_world.get_blob();
-    var pos = blob.get_pos();
+    var blobbo = blob_world.get_blob();
+    var pos = blobbo.get_pos();
+    console.log(pos);
     pos.push(pos[1]);
-    var colors = blob.get_color();
+    var colors = blobbo.get_color();
     colors.push(colors[1]);
     fill_buffer(pos_buffer, pos);
     fill_buffer(color_buffer, colors);
-    num_vertices = blob.get_pos().length;
+    num_vertices = blobbo.get_pos().length;
 }
 
 var frameRate = 1/40; //seconds
@@ -60,16 +61,16 @@ function init(){
 
     //If you want to see the original blob-mesh, comment out lines 63-70
     //Uncomment line 64 to create gl
-    ctx = canvas.getContext("2d"); //Rendering in 2D
-    //gl = WebGLUtils.setupWebGL(canvas);
+  //  ctx = canvas.getContext("2d"); //Rendering in 2D
+    gl = WebGLUtils.setupWebGL(canvas);
 
-    canvas.onclick = getMousePosition;
+   // canvas.onclick = getMousePosition;
 
-    ctx.fillStyle = 'blue'; //Sets the filled color for the blob
-    ctx.strokeStyle = '#000000'; //Sets the outline color for the blob
-    loopTimer = setInterval(loop, frameDelay);
+  //  ctx.fillStyle = 'blue'; //Sets the filled color for the blob
+   // ctx.strokeStyle = '#000000'; //Sets the outline color for the blob
+   // loopTimer = setInterval(loop, frameDelay);
 
-    /*
+
     if (!gl){
         alert("WebGL isn't available");
     }
@@ -85,8 +86,8 @@ function init(){
     vColor = gl.getAttribLocation(program, "vColor");
     mMV = gl.getUniformLocation(program, "mM");
 
-    var blob = new Blob(vec4(0,0,0,1), 0.25, 8);
-    blob_world = new BlobWorld(blob);
+    var blobbo = new Blob(vec4(0,0,0,1), 0.25, 8);
+    blob_world = new BlobWorld(blobbo);
 
     pos_buffer = gl.createBuffer();
     color_buffer = gl.createBuffer();
@@ -95,7 +96,7 @@ function init(){
 
     // Start rendering.
     render();
-    */
+
 }
 
 function getMousePosition(event) {

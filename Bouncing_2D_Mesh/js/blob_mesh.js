@@ -65,6 +65,7 @@ class Blob {
         var start_pos = add(center, vec4(rad, 0, 0, 0));
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
+            //var rot_mat = this.get_rot_mat(ang_rot);
             var pos = mult(rotateZ(ang_rot), start_pos);
             var point = new Point(pos);
             point.index = i;
@@ -85,9 +86,22 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-        console.log(this.points[1].pos);
-        console.log(this.points[3].pos);
-        console.log(this.calculate_controls(this.points[1], this.points[3]));
+    }
+
+    //Helper function for constructor,
+    //returns rotation matrix for current
+    //outer point of blob
+    get_rot_mat(angle) {
+        var rot_mat = mat3();
+        var c = Math.cos( radians(angle) );
+        var s = Math.sin( radians(angle) );
+
+        rot_mat[0][0] = c;
+        rot_mat[1][1] = c;
+        rot_mat[0][1] = -s;
+        rot_mat[1][0] = s;
+
+        return rot_mat;
     }
 
     /*
