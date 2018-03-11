@@ -70,7 +70,6 @@ class Blob {
             point.index = i;
             this.points.push(point);
             this.pos.push(point.pos);
-            console.log(mult(translate(this.center.pos[0], this.center.pos[1], 0), pos));
             this.colors.push(vec4(1,0,0,1));
         }
 
@@ -86,8 +85,35 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
+        console.log(this.points[1].pos);
+        console.log(this.points[3].pos);
+        console.log(this.calculate_controls(this.points[1], this.points[3]));
     }
 
+    /*
+     * Calculates the positions of
+     * the control points of the control
+     * cage for the current portion of this
+     * Blob's cubic curve.
+     * @param p0 {vec4} the "P0" of the current
+     * control cage
+     * @param p3 {vec4} the "P3"
+     * @return [pos1, pos2] the second and third
+     * positions of the second and third points
+     * on the cage.
+     */
+    calculate_controls(p0, p3) {
+
+        var comp1 = subtract(p0.pos, p0.right_neighbor.pos);
+        var vect1 = normalize(add(subtract(p0.pos, p0.right_neighbor.pos), subtract(p0.left_neighbor.pos, p0.pos)));
+        var pos1 = add(p0.pos,scale(-dot(vect1, comp1)/dot(vect1,vect1),vect1));
+
+        var comp2 = subtract(p3.pos, p3.left_neighbor.pos);
+        var vect2 = normalize(add(subtract(p3.pos, p3.left_neighbor.pos), subtract(p3.right_neighbor.pos, p3.pos)));
+        var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
+
+        return [pos1, pos2];
+    }
 
     get_points(){
 
