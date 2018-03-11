@@ -87,6 +87,8 @@ class Blob {
         console.log(this.points[1].pos);
         console.log(this.points[3].pos);
         console.log(this.calculate_controls(this.points[1], this.points[3]));
+
+        //this.Bezier();
     }
 
     /*
@@ -112,6 +114,67 @@ class Blob {
         var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
 
         return [pos1, pos2];
+    }
+
+    /*
+     * Calculates the positions of
+     * the control points of the control
+     * cage for the current portion of this
+     * Blob's cubic curve.
+     * @param p0 {vec4} the "P0" of the current
+     * control cage
+     * @param p3 {vec4} the "P3"
+     * @return [pos1, pos2] the second and third
+     * positions of the second and third points
+     * on the cage.
+     */
+    calculate_controls(p0, p3) {
+
+        var comp1 = subtract(p0.pos, p0.right_neighbor.pos);
+        var vect1 = normalize(add(subtract(p0.pos, p0.right_neighbor.pos), subtract(p0.left_neighbor.pos, p0.pos)));
+        var pos1 = add(p0.pos,scale(-dot(vect1, comp1)/dot(vect1,vect1),vect1));
+
+        var comp2 = subtract(p3.pos, p3.left_neighbor.pos);
+        var vect2 = normalize(add(subtract(p3.pos, p3.left_neighbor.pos), subtract(p3.right_neighbor.pos, p3.pos)));
+        var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
+
+        return [pos1, pos2];
+    }
+
+    /*
+     * Recursively creates new, smaller
+     * control cages to add new positions
+     * along this Blob's cubic curve.
+     * The base condition is triggered when
+     * the cubic and quadratic curve of the
+     * current control points are close enough
+     * to each other, at which point we apply
+     * the Bezier geometric matrix to find
+     * the final points along the curve
+     * @param {p0, p1, p2, p3} {vec4}: the
+     * control points of the control cage for
+     * this Blob's cubic Bezier curve
+     */
+    deCasteljau(p0, p1, p2, p3) {
+
+    }
+
+    /*
+     * Creates smooth arcs between trios
+     * of this Blob's outer points.
+     */
+    Bezier() {
+        var index = 0;
+
+        while ((index + 2) <= this.num_points) {
+            var p0 = this.points[index % this.num_points].pos;
+            var p3 = this.points[(index + 2) % this.num_points].pos;
+            var inner_controls = this.calculate_controls(p0, p3);
+            var p1 = inner_controls[0];
+            var p2 = inner_controls[1];
+            this.deCasteljau(p0, p1, p2, p3);
+            index += 2;
+        }
     }
 
     get_points(){
