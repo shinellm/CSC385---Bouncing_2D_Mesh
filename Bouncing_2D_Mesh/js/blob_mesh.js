@@ -70,8 +70,8 @@ class Blob {
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
-            this.pos.push(point.pos);
-            this.colors.push(vec4(1,0,0,1));
+            //this.pos.push(point.pos);
+            //this.colors.push(vec4(1,0,0,1));
         }
 
         //For each outer point, specifies its
@@ -85,6 +85,7 @@ class Blob {
 
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
+<<<<<<< HEAD
 <<<<<<< HEAD
 
     }
@@ -105,6 +106,11 @@ class Blob {
         return rot_mat;
 =======
         
+>>>>>>> Bezier
+=======
+
+        this.Bezier();
+
 >>>>>>> Bezier
     }
 
@@ -131,6 +137,40 @@ class Blob {
         var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
 
         return [pos1, pos2];
+    }
+
+    /*
+     * Recursively creates new, smaller
+     * control cages to add new positions
+     * along this Blob's cubic curve.
+     * The base condition is triggered when
+     * the cubic and quadratic curve of the
+     * current control points are close enough
+     * to each other, at which point we apply
+     * the Bezier geometric matrix to find
+     * the final points along the curve
+     * @param {p0, p1, p2, p3} {vec4}: the
+     * control points of the control cage for
+     * this Blob's cubic Bezier curve
+     */
+    deCasteljau(p0, p1, p2, p3) {
+
+    }
+
+    /*
+     * Creates smooth arcs between trios
+     * of this Blob's outer points.
+     */
+    Bezier() {
+        var index = 0;
+        while ((index + 2) <= this.num_points) {
+            var p0 = this.points[index % this.num_points].pos;
+            var p3 = this.points[(index + 2) % this.num_points].pos;
+            var inner_controls = this.calculate_controls(p0, p3);
+            var p1 = inner_controls[0];
+            var p2 = inner_controls[1];
+            this.deCasteljau(p0, p1, p2, p3);
+        }
     }
 
     get_points(){
