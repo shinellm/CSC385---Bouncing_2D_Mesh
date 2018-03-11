@@ -84,10 +84,7 @@ class Blob {
 
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
-
-        console.log(this.points[1].pos);
-        console.log(this.points[3].pos);
-        console.log(this.calculate_controls(this.points[1], this.points[3]));
+        
     }
 
     /*

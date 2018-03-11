@@ -60,16 +60,16 @@ function init(){
 
     //If you want to see the original blob-mesh, comment out lines 63-70
     //Uncomment line 64 to create gl
-    ctx = canvas.getContext("2d"); //Rendering in 2D
-    //gl = WebGLUtils.setupWebGL(canvas);
+  //  ctx = canvas.getContext("2d"); //Rendering in 2D
+    gl = WebGLUtils.setupWebGL(canvas);
 
-    canvas.onclick = getMousePosition;
+   // canvas.onclick = getMousePosition;
 
-    ctx.fillStyle = 'blue'; //Sets the filled color for the blob
-    ctx.strokeStyle = '#000000'; //Sets the outline color for the blob
-    loopTimer = setInterval(loop, frameDelay);
+  //  ctx.fillStyle = 'blue'; //Sets the filled color for the blob
+   // ctx.strokeStyle = '#000000'; //Sets the outline color for the blob
+   // loopTimer = setInterval(loop, frameDelay);
 
-    /*
+
     if (!gl){
         alert("WebGL isn't available");
     }
@@ -95,7 +95,7 @@ function init(){
 
     // Start rendering.
     render();
-    */
+
 }
 
 function getMousePosition(event) {
