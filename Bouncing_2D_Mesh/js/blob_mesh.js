@@ -160,6 +160,70 @@ class BlobWorld {
         return this.blob;
     }
 
+    free_fall(gravity){
+        
+        for (var i = 0; i < this.blob.num_points; i++) {
+            //this.blob.points[i].pos[0] -= dx; //Set mouse.x as the blob's x-coordinate
+            //this.blob.points[i].pos[1] -= dy; //Set mouse.y as the blob's y-coordinate
+
+            this.blob.points[i].velocity[1] -= gravity; //Set the blob's new velocity.y
+            this.blob.points[i].pos[0] += this.blob.points[i].velocity[0]; //Set the blob's new x-coordinate
+            this.blob.points[i].pos[1] += this.blob.points[i].velocity[1]; //Set the blob's new y-coordinate
+
+        }
+
+        this.blob.center.velocity[1] -= gravity; //Set the blob's new velocity.y
+        this.blob.center.pos[0] += this.blob.center.velocity[0]; //Set the blob's new x-coordinate
+        this.blob.center.pos[1] += this.blob.center.velocity[1]; //Set the blob's new y-coordinate
+
+    }
+
+    new_position(mouse){
+        var mousex = mouse.x;
+        var mousey = mouse.y;
+
+        console.log(mousex);
+        console.log(mousey);
+
+        this.blob.center.pos[0] = mousex;
+        this.blob.center.pos[1] = mousey;
+        this.blob.center.velocity[0] = 0;
+        this.blob.center.velocity[1] = 0;
+
+        console.log(this.blob.center.pos[0]);
+        console.log(this.blob.center.pos[1]);
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+            this.blob.points[i].pos[0] = mousex - this.blob.points[i].pos[0]; //Set mouse.x as the blob's x-coordinate
+            this.blob.points[i].pos[1] = mousey - this.blob.points[i].pos[1]; //Set mouse.y as the blob's y-coordinate
+
+        }
+    }
+
+    evolve(h, w){
+        var height = h;
+        var width = w;
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+            if (this.blob.points[i].pos[1] > height - this.blob.rad || this.blob.points[i].pos[0] > width - this.blob.rad || this.blob.points[i].pos[0] < this.blob.rad) {
+                this.blob.points[i].pos[1] = height - this.blob.rad;
+                //blob.pos.x = WIDTH/2;
+
+                this.blob.points[i].velocity[0] = 0; //Set the blob's velocity x
+                this.blob.points[i].velocity[1] *= -0.2; //Set the blob's velocity y
+            }
+        }
+
+        if (this.blob.center.pos[1] > height - this.blob.rad || this.blob.center.pos[0] > width - this.blob.rad || this.blob.center.pos[0] < this.blob.rad) {
+            this.blob.center.pos[1] = height - this.blob.rad;
+            //blob.pos.x = WIDTH/2;
+
+            this.blob.center.velocity[0] = 0; //Set the blob's velocity x
+            this.blob.center.velocity[1] *= -0.2; //Set the blob's velocity y
+        }
+
+    }
+
     init_blob_world() {
         var pos = this.blob.get_pos();
         pos.push(pos[1]);
