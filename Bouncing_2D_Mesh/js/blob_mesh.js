@@ -1,4 +1,3 @@
-
 class Point {
 
     constructor(pos){
@@ -65,12 +64,13 @@ class Blob {
         var start_pos = add(center, vec4(rad, 0, 0, 0));
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
+            //var rot_mat = this.get_rot_mat(ang_rot);
             var pos = mult(rotateZ(ang_rot), start_pos);
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
-            this.pos.push(point.pos);
-            this.colors.push(vec4(1,0,0,1));
+            //this.pos.push(point.pos);
+            //this.colors.push(vec4(1,0,0,1));
         }
 
         //For each outer point, specifies its
@@ -85,10 +85,9 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-        console.log(this.points[1].pos);
-        console.log(this.points[3].pos);
-        console.log(this.calculate_controls(this.points[1], this.points[3]));
+        this.Bezier();
     }
+
 
     /*
      * Calculates the positions of
@@ -113,6 +112,42 @@ class Blob {
         var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
 
         return [pos1, pos2];
+    }
+
+    /*
+     * Recursively creates new, smaller
+     * control cages to add new positions
+     * along this Blob's cubic curve.
+     * The base condition is triggered when
+     * the cubic and quadratic curve of the
+     * current control points are close enough
+     * to each other, at which point we apply
+     * the Bezier geometric matrix to find
+     * the final points along the curve
+     * @param {p0, p1, p2, p3} {vec4}: the
+     * control points of the control cage for
+     * this Blob's cubic Bezier curve
+     */
+    deCasteljau(p0, p1, p2, p3) {
+
+    }
+
+    /*
+     * Creates smooth arcs between trios
+     * of this Blob's outer points.
+     */
+    Bezier() {
+        var index = 0;
+
+        while ((index + 2) <= this.num_points) {
+            var p0 = this.points[index % this.num_points].pos;
+            var p3 = this.points[(index + 2) % this.num_points].pos;
+            var inner_controls = this.calculate_controls(p0, p3);
+            var p1 = inner_controls[0];
+            var p2 = inner_controls[1];
+            this.deCasteljau(p0, p1, p2, p3);
+            index += 2;
+        }
     }
 
     get_points(){
@@ -144,12 +179,41 @@ class BlobWorld {
      * locations of the point masses of the blob.
      * @param {Blob} the Blob this world contains
      */
-    constructor(blob) {
+    constructor(blob, gl, program) {
         this.blob = blob;
+        this.gl = gl;
+        this.program = program;
+        this.pos_buffer = this.gl.createBuffer();
+        this.color_buffer = this.gl.createBuffer();
+        this.vPosition = this.gl.getAttribLocation(program, "vPosition");
+        this.vColor = gl.getAttribLocation(program, "vColor");
+        this.mMV = gl.getUniformLocation(program, "mM");
+        this.num_vertices = this.blob.get_pos().length;
     }
 
     get_blob() {
         return this.blob;
+    }
+
+    init_blob_world() {
+        var pos = this.blob.get_pos();
+        pos.push(pos[1]);
+        var colors = this.blob.get_color();
+        colors.push(colors[1]);
+        fill_buffer(this.pos_buffer, pos);
+        fill_buffer(this.color_buffer, colors);
+        this.num_vertices = this.blob.get_pos().length;
+    }
+
+    render(){
+        this.gl.useProgram(this.program);
+
+        var mM = mat4();
+        mM = mult(translate(this.blob.get_center().pos[0], this.blob.get_center().pos[1], 0), mM);
+        this.gl.uniformMatrix4fv(this.mMV, false, flatten(mM));
+        enable_attribute_buffer(this.vPosition, this.pos_buffer, 4);
+        enable_attribute_buffer(this.vColor, this.color_buffer, 4);
+        this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
     }
 }
 
