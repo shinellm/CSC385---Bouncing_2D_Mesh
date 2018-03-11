@@ -85,6 +85,7 @@ class Blob {
 
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
+<<<<<<< HEAD
 
     }
 
@@ -102,6 +103,9 @@ class Blob {
         rot_mat[1][0] = s;
 
         return rot_mat;
+=======
+        
+>>>>>>> Bezier
     }
 
     /*
