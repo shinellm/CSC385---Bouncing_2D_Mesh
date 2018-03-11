@@ -17,12 +17,11 @@ function render(){
     }, 10);
 }
 
-var frameRate = 1/40; //seconds
-var frameDelay = frameRate * 1000; //ms
-var loopTimer;
 var mouse = {x:0, y:0};
 var gravity = 0.5;
 var bounce_factor = 0.8;
+var dx;
+var dy;
 
 function init(){
 
@@ -58,10 +57,15 @@ function getMousePosition(event) {
     mouse.x = event.clientX - canvas.offsetLeft; //Get the x-coordinate of the mouse
     mouse.y = event.clientY - canvas.offsetTop; //Get the y-coordinate of the mouse
 
-    blob.center.pos.x = mouse.x; //Set mouse.x as the blob's x-coordinate
-    blob.center.pos.y = mouse.y; //Set mouse.y as the blob's y-coordinate
-    blob.center.velocity.x = 0 //Reset the blob's velocity.x
-    blob.center.velocity.y = 0 //Reset the blob's velocity.y
+    dx = blob.center.pos.x - mouse.x;
+    dy = blob.center.pos.y - mouse.y;
+
+    for (var i = 0; i < blob.num_points; i++) {
+        blob.points[i].pos.x -= dx; //Set mouse.x as the blob's x-coordinate
+        blob.points[i].pos.y -= dy; //Set mouse.y as the blob's y-coordinate
+        blob.points[i].velocity.x = 0 //Reset the blob's velocity.x
+        blob.points[i].velocity.y = 0 //Reset the blob's velocity.y
+    }
 
     //For testing purposes
     var coords = "X coords: " + mouse.x + ", Y coords: " + mouse.y;
@@ -70,12 +74,14 @@ function getMousePosition(event) {
 
 
 function loop() {
-
     var blob = blob_world.get_blob();
-    blob.center.velocity.y += gravity; //Set the blob's new velocity.y
 
-    blob.center.pos.x += blob.center.velocity.x; //Set the blob's new x-coordinate
-    blob.center.pos.y += blob.center.velocity.y; //Set the blob's new y-coordinate
+    for (var j = 0; j < blob.num_points; j++) {
+        blob.points[j].velocity.y += gravity; //Set the blob's new velocity.y
+
+        blob.points[j].pos.x += blob.points[j].velocity.x; //Set the blob's new x-coordinate
+        blob.points[j].pos.y += blob.points[j].velocity.y; //Set the blob's new y-coordinate
+    }
 
     //Example code I found
     /*if ( ! mouse.isDown) {
@@ -100,13 +106,15 @@ function loop() {
     }*/
 
     // Handle collisions with the perimeter of the canvas
-    if (blob.center.pos.y > HEIGHT - blob.rad || blob.center.pos.x > WIDTH - blob.rad || blob.center.pos.x < blob.rad) {
-        blob.center.pos.y = HEIGHT - blob.rad;
-        //blob.pos.x = WIDTH/2;
+    for (var k = 0; k < blob.num_points; k++) {
+        if (blob.points[k].pos.y > HEIGHT - blob.rad || blob.points[k].pos.x > WIDTH - blob.rad || blob.points[k].pos.x < blob.rad) {
+            blob.points[k].pos.y = HEIGHT - blob.rad;
+            //blob.pos.x = WIDTH/2;
 
-        blob.center.velocity.x = 0; //Set the blob's velocity x
-        blob.center.velocity.y *= -bounce_factor; //Set the blob's velocity y
+            blob.points[k].velocity.x = 0; //Set the blob's velocity x
+            blob.points[k].velocity.y *= -bounce_factor; //Set the blob's velocity y
+        }
     }
-    
+
 
 }
