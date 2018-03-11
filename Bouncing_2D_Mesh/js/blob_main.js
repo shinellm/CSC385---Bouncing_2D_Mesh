@@ -57,6 +57,9 @@ function init(){
 
     // Initialize WebGL.
     canvas = document.getElementById("gl-canvas");
+
+    //If you want to see the original blob-mesh, comment out lines 63-70
+    //Uncomment line 64 to create gl
     ctx = canvas.getContext("2d"); //Rendering in 2D
     //gl = WebGLUtils.setupWebGL(canvas);
 
