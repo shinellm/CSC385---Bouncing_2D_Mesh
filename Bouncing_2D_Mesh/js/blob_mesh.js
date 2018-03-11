@@ -85,34 +85,10 @@ class Blob {
 
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    }
-
-    //Helper function for constructor,
-    //returns rotation matrix for current
-    //outer point of blob
-    get_rot_mat(angle) {
-        var rot_mat = mat3();
-        var c = Math.cos( radians(angle) );
-        var s = Math.sin( radians(angle) );
-
-        rot_mat[0][0] = c;
-        rot_mat[1][1] = c;
-        rot_mat[0][1] = -s;
-        rot_mat[1][0] = s;
-
-        return rot_mat;
-=======
-        
->>>>>>> Bezier
-=======
 
         this.Bezier();
-
->>>>>>> Bezier
     }
+
 
     /*
      * Calculates the positions of
@@ -163,6 +139,7 @@ class Blob {
      */
     Bezier() {
         var index = 0;
+
         while ((index + 2) <= this.num_points) {
             var p0 = this.points[index % this.num_points].pos;
             var p3 = this.points[(index + 2) % this.num_points].pos;
@@ -170,6 +147,7 @@ class Blob {
             var p1 = inner_controls[0];
             var p2 = inner_controls[1];
             this.deCasteljau(p0, p1, p2, p3);
+            index += 2;
         }
     }
 
