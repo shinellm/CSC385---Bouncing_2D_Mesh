@@ -322,4 +322,3 @@ class BlobWorld {
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
     }
 }
-
