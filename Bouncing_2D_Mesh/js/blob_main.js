@@ -4,7 +4,7 @@ window.onload = init;
 const WIDTH = 964; //Current canvas width
 const HEIGHT = 546; //Current canvas height
 var mouse = {x:0, y:0};
-var gravity = 0.01;
+var gravity = 0.001;
 var bounce_factor = 0.8;
 var dx = 0;
 var dy = 0;
@@ -19,7 +19,7 @@ function render(){
         blob_world.render();
         blob_world.free_fall(gravity);
         //blob_world.evolve(HEIGHT, WIDTH);
-        //loop();
+
         requestAnimFrame(render);
     }, 100);
 }
