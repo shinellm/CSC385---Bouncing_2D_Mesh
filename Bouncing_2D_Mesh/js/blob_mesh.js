@@ -64,13 +64,12 @@ class Blob {
         var start_pos = add(center, vec4(rad, 0, 0, 0));
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
-            //var rot_mat = this.get_rot_mat(ang_rot);
             var pos = mult(rotateZ(ang_rot), start_pos);
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
-            //this.pos.push(point.pos);
-            //this.colors.push(vec4(1,0,0,1));
+            this.pos.push(point.pos);
+            this.colors.push(vec4(1,0,0,1));
         }
 
         //For each outer point, specifies its
@@ -85,9 +84,10 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-        this.Bezier();
+        console.log(this.points[1].pos);
+        console.log(this.points[3].pos);
+        console.log(this.calculate_controls(this.points[1], this.points[3]));
     }
-
 
     /*
      * Calculates the positions of
@@ -114,42 +114,6 @@ class Blob {
         return [pos1, pos2];
     }
 
-    /*
-     * Recursively creates new, smaller
-     * control cages to add new positions
-     * along this Blob's cubic curve.
-     * The base condition is triggered when
-     * the cubic and quadratic curve of the
-     * current control points are close enough
-     * to each other, at which point we apply
-     * the Bezier geometric matrix to find
-     * the final points along the curve
-     * @param {p0, p1, p2, p3} {vec4}: the
-     * control points of the control cage for
-     * this Blob's cubic Bezier curve
-     */
-    deCasteljau(p0, p1, p2, p3) {
-
-    }
-
-    /*
-     * Creates smooth arcs between trios
-     * of this Blob's outer points.
-     */
-    Bezier() {
-        var index = 0;
-
-        while ((index + 2) <= this.num_points) {
-            var p0 = this.points[index % this.num_points].pos;
-            var p3 = this.points[(index + 2) % this.num_points].pos;
-            var inner_controls = this.calculate_controls(p0, p3);
-            var p1 = inner_controls[0];
-            var p2 = inner_controls[1];
-            this.deCasteljau(p0, p1, p2, p3);
-            index += 2;
-        }
-    }
-
     get_points(){
 
         return this.points;
@@ -169,6 +133,7 @@ class Blob {
     }
 
 }
+
 
 class BlobWorld {
     /*
