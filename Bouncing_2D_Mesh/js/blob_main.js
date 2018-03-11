@@ -3,6 +3,7 @@ window.onload = init;
 
 const WIDTH = 964; //Current canvas width
 const HEIGHT = 546; //Current canvas height
+const MAX_STEPS = 3;
 
 // Renders the frame.
 function render(){

@@ -95,9 +95,9 @@ class Blob {
      * the control points of the control
      * cage for the current portion of this
      * Blob's cubic curve.
-     * @param p0 {vec4} the "P0" of the current
-     * control cage
-     * @param p3 {vec4} the "P3"
+     * @param p0 {vec4} the point with position, "P0"
+     * of the current control cage
+     * @param p3 {vec4} the point with position, "P3"
      * @return [pos1, pos2] the second and third
      * positions of the second and third points
      * on the cage.
@@ -116,6 +116,31 @@ class Blob {
     }
 
     /*
+     * Helper function for computing
+     * each curve position, by performing
+     * vector-matrix multiplication.
+     * @param vec {vec4}: the Bezier "b-vector"
+     * @param mat {mat4}: the 4x4 matrix of the
+     * coordinates of the 4 points along the curve
+     * @return pos {vec4}: the point along the curve
+     * at time t.
+     */
+    special_dot(vec, mat) {
+        var pos = vec4(0);
+
+        for (var i = 0; i < 4; i++) {
+            var total = 0;
+            for (var j = 0; j < 4; j++) {
+                total += mat[i][j] * vec[j];
+            }
+            pos[i] += total;
+        }
+        pos[3] = 1;
+
+        return pos;
+    }
+
+    /*
      * Recursively creates new, smaller
      * control cages to add new positions
      * along this Blob's cubic curve.
@@ -130,8 +155,39 @@ class Blob {
      * this Blob's cubic Bezier curve
      */
     deCasteljau(p0, p1, p2, p3) {
+        var t = 0.4;
+        var p = add(p1, scale(0.5, subtract(p2,p1)));
+        var difference = length(scale(0.125,add(add(p0,scale(4,p)),add(scale(-3,add(p1, p2)), p3))));
+        if (difference <= 0.1) {
+            var u = vec4(0, 1/3, 2/3, 1);
 
+            var points = [p0, p1, p2, p3];
+            for (var i = 0; i < 4; i++) {
+                var b = [Math.pow((1 - u[i]), 3), 3 * u[i] * Math.pow((1 - u[i]), 2),
+                    3 * Math.pow(u[i], 2) * (1 - u[i]), Math.pow(u[i], 3)];
+                var pos = this.special_dot(b, points);
+                this.pos.push(pos);
+                this.colors.push(vec4(1,0,0,1));
+            }
+        } else {
+            var p11 = add(p0,scale(t,subtract(p1,p0)));
+            var p21 = add(p1,scale(t,subtract(p2,p1)));
+            var p31 = add(p2,scale(t,subtract(p3,p2)));
+            var p12 = add(p11,scale(t,subtract(p21,p11)));
+            var p22 = add(p21,scale(t,subtract(p31,p21)));
+            var p13 = add(p12,scale(t,subtract(p22,p12)));
+
+            this.pos.push(p0);
+            this.colors.push(vec4(1,0,0,1));
+            this.deCasteljau(p0, p11, p12, p13);
+            this.pos.push(p13);
+            this.colors.push(vec4(1,0,0,1));
+            this.deCasteljau(p13, p22, p31, p3);
+            this.pos.push(p3);
+            this.colors.push(vec4(1,0,0,1));
+        }
     }
+
 
     /*
      * Creates smooth arcs between trios
@@ -141,11 +197,13 @@ class Blob {
         var index = 0;
 
         while ((index + 2) <= this.num_points) {
-            var p0 = this.points[index % this.num_points].pos;
-            var p3 = this.points[(index + 2) % this.num_points].pos;
-            var inner_controls = this.calculate_controls(p0, p3);
+            var point0 = this.points[index % this.num_points];
+            var point3 = this.points[(index + 2) % this.num_points];
+            var inner_controls = this.calculate_controls(point0, point3);
+            var p0 = point0.pos;
             var p1 = inner_controls[0];
             var p2 = inner_controls[1];
+            var p3 = point3.pos
             this.deCasteljau(p0, p1, p2, p3);
             index += 2;
         }
