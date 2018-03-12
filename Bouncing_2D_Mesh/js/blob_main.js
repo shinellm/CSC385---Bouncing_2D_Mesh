@@ -1,7 +1,7 @@
 // This is the main JS file.
 window.onload = init;
 
-//const FLATNESS = 0.001;
+const FLATNESS = 0.001;
 
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
@@ -46,7 +46,7 @@ function init(){
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var blob = new Blob(vec4(0,0,0,1), 0.25, 6);
+    var blob = new Blob(vec4(0.5,0.5,0,1), 0.25, 6);
     blob_world = new BlobWorld(blob, gl, program);
 
     //blob_world.init_blob_world();
