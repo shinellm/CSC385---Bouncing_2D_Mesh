@@ -95,9 +95,15 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
+<<<<<<< HEAD
         console.log(this.points[1].pos);
         console.log(this.points[3].pos);
         console.log(this.calculate_controls(this.points[1], this.points[3]));
+=======
+       // console.log(this.points[1].pos);
+       // console.log(this.points[3].pos);
+        //console.log(this.calculate_controls(this.points[1], this.points[3]));
+>>>>>>> Bezier
 
         this.Bezier();
     }
@@ -146,18 +152,22 @@ class Blob {
      */
     deCasteljau(p0, p1, p2, p3) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> Bezier
         var t = 0.5;
         var p = add(p1, scale(0.5, subtract(p2,p1)));
         var difference = length(scale(0.125,add(add(p0,scale(4,p)),add(scale(-3,add(p1, p2)), p3))));
-        if (difference <= 0.001) {
+        if (difference <= FLATNESS) {
             var u = vec4(0, 1/3, 2/3, 1);
 
             var points = [p0, p1, p2, p3];
             for (var i = 0; i < 4; i++) {
-                var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
-                var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
-                var b = this.special_dot(ts,M_b);
-                var pos = this.special_dot(b, points);
+              //  var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
+               // var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
+               // var b = this.special_dot(ts,M_b);
+               // var pos = this.special_dot(b, points);
                 this.pos.push(points[i]);
                 this.colors.push(vec4(1,0,0,1));
             }
@@ -178,6 +188,10 @@ class Blob {
 
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> Bezier
     /**
      * Creates smooth arcs between trios
      * of this Blob's outer points.
@@ -191,6 +205,10 @@ class Blob {
             var inner_controls = this.calculate_controls(p0, p3);
             var p1 = inner_controls[0];
             var p2 = inner_controls[1];
+<<<<<<< HEAD
+=======
+            var p3 = point3.pos;
+>>>>>>> Bezier
             this.deCasteljau(p0, p1, p2, p3);
             index += 2;
         }

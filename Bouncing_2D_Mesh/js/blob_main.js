@@ -2,6 +2,7 @@
 window.onload = init;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const WIDTH = 964; //Current canvas width
 const HEIGHT = 546; //Current canvas height
 
@@ -38,6 +39,42 @@ function render(){
     }, 100);
 }
 
+=======
+
+//const WIDTH = 964; //Current canvas width
+//const HEIGHT = 546; //Current canvas height
+
+const FLATNESS = 0.001;
+
+
+//const WIDTH = 964; //Current canvas width
+//const HEIGHT = 546; //Current canvas height
+
+var WIDTH; //Current canvas width
+var HEIGHT; //Current canvas height
+var mouse = {x:0, y:0};
+var gravity = 0.01;
+var bounce_factor = 0.8;
+var dx = 0;
+var dy = 0;
+
+
+
+// Renders the frame.
+function render(){
+    setTimeout(function() {
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        blob_world.init_blob_world();
+        blob_world.render();
+        blob_world.free_fall(gravity);
+        //blob_world.evolve(HEIGHT, WIDTH);
+
+        requestAnimFrame(render);
+    }, 100);
+}
+
+>>>>>>> Bezier
 
 function init(){
 
