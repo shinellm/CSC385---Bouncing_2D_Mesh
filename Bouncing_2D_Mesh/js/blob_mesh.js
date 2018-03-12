@@ -162,8 +162,9 @@ class Blob {
 
             var points = [p0, p1, p2, p3];
             for (var i = 0; i < 4; i++) {
-                var b = [Math.pow((1 - u[i]), 3), 3 * u[i] * Math.pow((1 - u[i]), 2),
-                    3 * Math.pow(u[i], 2) * (1 - u[i]), Math.pow(u[i], 3)];
+                var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
+                var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
+                var b = this.special_dot(ts,M_b);
                 var pos = this.special_dot(b, points);
                 this.pos.push(pos);
                 this.colors.push(vec4(1,0,0,1));
