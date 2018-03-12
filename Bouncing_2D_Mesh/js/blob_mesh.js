@@ -277,8 +277,12 @@ class BlobWorld {
         var mousex = mouse.x; //x-coordinate of the mouse click
         var mousey = mouse.y; //y-coordinate of the mouse click
 
-        console.log(mousex);
-        console.log(mousey);
+        console.log("Mousex " + mousex);
+        console.log("Mousey " + mousey);
+
+        //For testing purposes
+        console.log("Old Blob Center x " + this.blob.center.pos[0]);
+        console.log("Old Blob Center y " + this.blob.center.pos[1]);
 
         this.blob.center.pos[0] = mousex; //Set the position.x of the blob's center to be mousex
         this.blob.center.pos[1] = mousey; //Set the position.y of the blob's center to be mousey
@@ -286,8 +290,8 @@ class BlobWorld {
         this.blob.center.velocity[1] = 0; //Reset the velocity.y of the blob's center
 
         //For testing purposes
-        console.log(this.blob.center.pos[0]);
-        console.log(this.blob.center.pos[1]);
+        console.log("New Blob Center x " + this.blob.center.pos[0]);
+        console.log("New Blob Center y " + this.blob.center.pos[1]);
 
         //Do the same steps for each exterior point on the blob
         for (var i = 0; i < this.blob.num_points; i++) {
