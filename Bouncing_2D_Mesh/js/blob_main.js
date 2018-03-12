@@ -1,16 +1,13 @@
 // This is the main JS file.
 window.onload = init;
 
-const FLATNESS = 0.001;
+//const FLATNESS = 0.001;
 
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
 var gravity = 0.01;
 var bounce_factor = 0.8;
-var dx = 0;
-var dy = 0;
-
 
 
 // Renders the frame.
