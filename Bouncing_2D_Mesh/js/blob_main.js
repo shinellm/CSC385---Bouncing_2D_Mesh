@@ -3,12 +3,16 @@ window.onload = init;
 
 const WIDTH = 964; //Current canvas width
 const HEIGHT = 546; //Current canvas height
+<<<<<<< HEAD
+const MAX_STEPS = 3;
+=======
 var mouse = {x:0, y:0};
 var gravity = 0.001;
 var bounce_factor = 0.8;
 var dx = 0;
 var dy = 0;
 
+>>>>>>> 46f0516538e34f37d98c7c56783f2e9e9bc0b316
 
 // Renders the frame.
 function render(){
