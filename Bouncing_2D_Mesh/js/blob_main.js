@@ -38,7 +38,7 @@ function init(){
     if (!gl){
         alert("WebGL isn't available");
     }
-    gl.viewport(WIDTH/10000, HEIGHT/10000,WIDTH, HEIGHT);
+    gl.viewport(0, 0,WIDTH, HEIGHT);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
