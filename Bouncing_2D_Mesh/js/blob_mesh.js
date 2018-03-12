@@ -88,7 +88,7 @@ class Blob {
         console.log(this.points[3].pos);
         console.log(this.calculate_controls(this.points[1], this.points[3]));
 
-        //this.Bezier();
+        this.Bezier();
     }
 
     /*
