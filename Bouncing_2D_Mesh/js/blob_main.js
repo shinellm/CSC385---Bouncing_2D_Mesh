@@ -1,16 +1,13 @@
 // This is the main JS file.
 window.onload = init;
 
-const FLATNESS = 0.001;
+//const FLATNESS = 0.001;
 
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
 var gravity = 0.01;
 var bounce_factor = 0.8;
-var dx = 0;
-var dy = 0;
-
 
 
 // Renders the frame.
@@ -64,9 +61,23 @@ function getMousePosition(event) {
     mouse.x = event.clientX - canvas.offsetLeft; //Get the x-coordinate of the mouse
     mouse.y = event.clientY - canvas.offsetTop; //Get the y-coordinate of the mouse
 
-    //mouse.x = mouse.x / 10000;
-    //mouse.y = mouse.y / 10000;
+    //For testing purposes
+    console.log("Pixel x " + mouse.x);
+    console.log("Pixel y " + mouse.y);
 
+    //Convert the pixel to WebGL coordinates
+    var pixel_x = ((mouse.x / canvas.width * canvas.width) - canvas.width / 2);
+    var pixel_y = ((canvas.height - mouse.y) / canvas.height * canvas.height) - canvas.height / 2;
+    var point_clicked = vec2((Math.floor(pixel_x)) / (canvas.width / 2), (Math.floor(pixel_y)) / (canvas.height / 2));
+
+    //For testing purposes
+    console.log("Transformed point clicked " + point_clicked);
+
+    //Set WebGL coordinates for mouse.x and mouse.y
+    mouse.x = point_clicked[0];
+    mouse.y = point_clicked[1];
+
+    //Set the new positions of each vertex
     blob_world.new_position(mouse);
 
     //For testing purposes
