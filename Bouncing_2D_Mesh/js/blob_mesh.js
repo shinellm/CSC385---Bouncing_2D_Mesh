@@ -154,10 +154,10 @@ class Blob {
      * this Blob's cubic Bezier curve
      */
     deCasteljau(p0, p1, p2, p3) {
-        var t = 0.4;
+        var t = 0.5;
         var p = add(p1, scale(0.5, subtract(p2,p1)));
         var difference = length(scale(0.125,add(add(p0,scale(4,p)),add(scale(-3,add(p1, p2)), p3))));
-        if (difference <= 0.1) {
+        if (difference <= 0.001) {
             var u = vec4(0, 1/3, 2/3, 1);
 
             var points = [p0, p1, p2, p3];
@@ -166,7 +166,7 @@ class Blob {
                 var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
                 var b = this.special_dot(ts,M_b);
                 var pos = this.special_dot(b, points);
-                this.pos.push(pos);
+                this.pos.push(points[i]);
                 this.colors.push(vec4(1,0,0,1));
             }
         } else {
