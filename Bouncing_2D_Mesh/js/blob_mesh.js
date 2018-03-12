@@ -1,6 +1,10 @@
-
 class Point {
 
+    /**
+     * Creates a Point from a specified position.
+     * @param pos {vec4}
+     *      The position of the Point
+     */
     constructor(pos){
 
         this.pos = pos;  //When setting new pos values, be sure to include 1 as w-value, always.
@@ -11,12 +15,15 @@ class Point {
 
     }
 
-    /*
+    /**
      * For setting position and color of new odd vertices or old even vertices,
      * based on surrounding ones. For parts b. and d. of Loop formula.
-     * param: verts the surrounding vertices used as basis for scaling
-     * param: weights the weights with which to scale each surrounding vertex's color and position
-     * param: s the scalar of this Vertex, to be done before adding its neighbors' weights
+     * @param: verts
+     *      The surrounding vertices used as basis for scaling
+     * @param: weights
+     *      The weights with which to scale each surrounding vertex's color and position
+     * @param: s
+     *      The scalar of this Vertex, to be done before adding its neighbors' weights
      * NOTE: want to scale each even vertex by its neighbors' values, as they all
      * were before subdivision, so verts here must be a copy of these values, not
      * the actual Vertex objects of the Mesh.
@@ -38,16 +45,19 @@ class Point {
 
 class Blob {
 
-    /*
+    /**
      * Forms a blob from a specified
      * center, a radius, and the number
      * of point masses on its perimeter
-     * @param center {vec4} the center of the blob
-     * @param rad {num} this blob's radius, when the
-     * blob is represented as a circle, before any
-     * forces act upon it
-     * @param num_points {num} the number of points
-     * on the perimeter of this blob
+     * @param center {vec4}
+     *      The center of the blob
+     * @param rad {num}
+     *      This blob's radius, when the blob is
+     *      represented as a circle, before any
+     *      forces act upon it
+     * @param num_points {num}
+     *      The number of points on the perimeter
+     *      of this blob
      */
     constructor(center, rad, num_points){
         this.center = new Point(center);
@@ -69,8 +79,8 @@ class Blob {
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
-            //this.pos.push(point.pos);
-            //this.colors.push(vec4(1,0,0,1));
+            this.pos.push(point.pos);
+            this.colors.push(vec4(1,0,0,1));
         }
 
         //For each outer point, specifies its
@@ -85,21 +95,26 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-        this.Bezier();
+       // console.log(this.points[1].pos);
+       // console.log(this.points[3].pos);
+        //console.log(this.calculate_controls(this.points[1], this.points[3]));
 
+        this.Bezier();
     }
 
-    /*
+    /**
      * Calculates the positions of
      * the control points of the control
      * cage for the current portion of this
      * Blob's cubic curve.
-     * @param p0 {vec4} the point with position, "P0"
-     * of the current control cage
-     * @param p3 {vec4} the point with position, "P3"
-     * @return [pos1, pos2] the second and third
-     * positions of the second and third points
-     * on the cage.
+     *
+     * @param p0 {vec4}
+     *      The "P0" of the current control cage
+     * @param p3 {vec4}
+     *      The "P3"
+     * @return [pos1, pos2]
+     *      The second and third positions of the
+     *      second and third points on the cage.
      */
     calculate_controls(p0, p3) {
 
@@ -114,32 +129,7 @@ class Blob {
         return [pos1, pos2];
     }
 
-    /*
-     * Helper function for computing
-     * each curve position, by performing
-     * vector-matrix multiplication.
-     * @param vec {vec4}: the Bezier "b-vector"
-     * @param mat {mat4}: the 4x4 matrix of the
-     * coordinates of the 4 points along the curve
-     * @return pos {vec4}: the point along the curve
-     * at time t.
-     */
-    special_dot(vec, mat) {
-        var pos = vec4(0);
-
-        for (var i = 0; i < 4; i++) {
-            var total = 0;
-            for (var j = 0; j < 4; j++) {
-                total += mat[i][j] * vec[j];
-            }
-            pos[i] += total;
-        }
-        pos[3] = 1;
-
-        return pos;
-    }
-
-    /*
+    /**
      * Recursively creates new, smaller
      * control cages to add new positions
      * along this Blob's cubic curve.
@@ -149,52 +139,50 @@ class Blob {
      * to each other, at which point we apply
      * the Bezier geometric matrix to find
      * the final points along the curve
-     * @param {p0, p1, p2, p3} {vec4}: the
-     * control points of the control cage for
-     * this Blob's cubic Bezier curve
+     *
+     * @param {p0, p1, p2, p3} {vec4}
+     *      The control points of the control
+     *      cage for this Blob's cubic Bezier curve.
      */
     deCasteljau(p0, p1, p2, p3) {
+
         var t = 0.5;
         var p = add(p1, scale(0.5, subtract(p2,p1)));
         var difference = length(scale(0.125,add(add(p0,scale(4,p)),add(scale(-3,add(p1, p2)), p3))));
-        if (difference <= 0.001) {
+        if (difference <= FLATNESS) {
             var u = vec4(0, 1/3, 2/3, 1);
 
             var points = [p0, p1, p2, p3];
             for (var i = 0; i < 4; i++) {
-                var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
-                var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
-                var b = this.special_dot(ts,M_b);
-                var pos = this.special_dot(b, points);
+              //  var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
+               // var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
+               // var b = this.special_dot(ts,M_b);
+               // var pos = this.special_dot(b, points);
                 this.pos.push(points[i]);
                 this.colors.push(vec4(1,0,0,1));
             }
         } else {
-            var p11 = add(p0,scale(t,subtract(p1,p0)));
-            var p21 = add(p1,scale(t,subtract(p2,p1)));
-            var p31 = add(p2,scale(t,subtract(p3,p2)));
-            var p12 = add(p11,scale(t,subtract(p21,p11)));
-            var p22 = add(p21,scale(t,subtract(p31,p21)));
-            var p13 = add(p12,scale(t,subtract(p22,p12)));
+            var p11 = add(scale(1 - t, p0), scale(t, p1));
+            var p21 = add(scale(1 - t, p1), scale(t, p2));
+            var p31 = add(scale(1 - t, p2), scale(t, p3));
+            var p12 = add(scale(1 - t, p11), scale(t, p21));
+            var p22 = add(scale(1 - t, p21), scale(t, p31));
+            var p13 = add(scale(1 - t, p12), scale(t, p22));
 
-            this.pos.push(p0);
-            this.colors.push(vec4(1,0,0,1));
             this.deCasteljau(p0, p11, p12, p13);
-            this.pos.push(p13);
-            this.colors.push(vec4(1,0,0,1));
             this.deCasteljau(p13, p22, p31, p3);
-            this.pos.push(p3);
-            this.colors.push(vec4(1,0,0,1));
         }
     }
 
 
-    /*
+
+    /**
      * Creates smooth arcs between trios
      * of this Blob's outer points.
      */
     Bezier() {
         var index = 0;
+
         while ((index + 2) <= this.num_points) {
             var point0 = this.points[index % this.num_points];
             var point3 = this.points[(index + 2) % this.num_points];
@@ -202,7 +190,7 @@ class Blob {
             var p0 = point0.pos;
             var p1 = inner_controls[0];
             var p2 = inner_controls[1];
-            var p3 = point3.pos
+            var p3 = point3.pos;
             this.deCasteljau(p0, p1, p2, p3);
             index += 2;
         }
@@ -228,21 +216,139 @@ class Blob {
 
 }
 
+
 class BlobWorld {
-    /*
+    /**
      * The world in which the Blob exists.
      * Includes the blob and the pixel array
      * from the program, that actually colors
      * the appropriate pixels, based on the
      * locations of the point masses of the blob.
-     * @param {Blob} the Blob this world contains
+     *
+     * @param {Blob}
+     *      The Blob this world contains.
      */
-    constructor(blob) {
+    constructor(blob, gl, program) {
         this.blob = blob;
+        this.gl = gl;
+        this.program = program;
+        this.pos_buffer = this.gl.createBuffer();
+        this.color_buffer = this.gl.createBuffer();
+        this.vPosition = this.gl.getAttribLocation(program, "vPosition");
+        this.vColor = gl.getAttribLocation(program, "vColor");
+        this.mMV = gl.getUniformLocation(program, "mM");
+        this.num_vertices = this.blob.get_pos().length;
     }
 
     get_blob() {
         return this.blob;
     }
-}
 
+    /**
+     * Sets every point on the blob to a new position
+     * based on gravity.
+     *
+     * @param {number} gravity
+     *      The gravity applied to the blob.
+     */
+    free_fall(gravity){
+
+        this.blob.center.velocity[1] -= gravity; //Set the new velocity.y of the blob's center
+        this.blob.center.pos[0] += this.blob.center.velocity[0]; //Set the new position.x of the blob's center
+        this.blob.center.pos[1] += this.blob.center.velocity[1]; //Set the new position.y of the blob's center
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+            this.blob.points[i].velocity[1] -= gravity; //Set the new velocity.y of the blob's point
+            this.blob.points[i].pos[0] += this.blob.points[i].velocity[0]; //Set the new position.x of the blob's point
+            this.blob.points[i].pos[1] += this.blob.points[i].velocity[1]; //Set the new position.y of the blob's point
+        }
+    }
+
+    /**
+     * Sets every point on the blob to a new position
+     * based on the position of the mouse click on
+     * the canvas.
+     *
+     * @param {object} mouse
+     *      The position of the mouse click on the canvas.
+     */
+    new_position(mouse){
+        var mousex = mouse.x; //x-coordinate of the mouse click
+        var mousey = mouse.y; //y-coordinate of the mouse click
+
+        console.log(mousex);
+        console.log(mousey);
+
+        this.blob.center.pos[0] = mousex; //Set the position.x of the blob's center to be mousex
+        this.blob.center.pos[1] = mousey; //Set the position.y of the blob's center to be mousey
+        this.blob.center.velocity[0] = 0; //Reset the velocity.x of the blob's center
+        this.blob.center.velocity[1] = 0; //Reset the velocity.y of the blob's center
+
+        //For testing purposes
+        console.log(this.blob.center.pos[0]);
+        console.log(this.blob.center.pos[1]);
+
+        //Do the same steps for each exterior point on the blob
+        for (var i = 0; i < this.blob.num_points; i++) {
+            this.blob.points[i].pos[0] = mousex - this.blob.points[i].pos[0] + this.blob.rad; //Set the new position.x of the blob's point
+            this.blob.points[i].pos[1] = mousey - this.blob.points[i].pos[1] + this.blob.rad; //Set the new position.y of the blob's point
+            this.blob.points[i].velocity[0] = 0; //Reset the velocity.x of the blob's point
+            this.blob.points[i].velocity[1] = 0; //Reset the velocity.y of the blob's point
+        }
+    }
+
+    /**
+     * Evolves the blob by moving every point on the
+     * blob and checks for collisions with the canvas.
+     *
+     * @param {number} h
+     *      The height of the canvas.
+     * @param {number} w
+     *      The width of the canvas.
+     */
+    evolve(h, w){
+        var height = h;
+        var width = w;
+
+        //Check for collisions
+
+        if (this.blob.center.pos[1] > height - this.blob.rad || this.blob.center.pos[0] > width - this.blob.rad || this.blob.center.pos[0] < this.blob.rad) {
+            this.blob.center.pos[1] = height - this.blob.rad;
+            //blob.pos.x = WIDTH/2;
+
+            this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
+            this.blob.center.velocity[1] *= -0.2; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+        }
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+            if (this.blob.points[i].pos[1] > height - this.blob.rad || this.blob.points[i].pos[0] > width - this.blob.rad || this.blob.points[i].pos[0] < this.blob.rad) {
+                this.blob.points[i].pos[1] = height - this.blob.rad;
+                //blob.pos.x = WIDTH/2;
+
+                this.blob.points[i].velocity[0] = 0; //Set the velocity.x of the blob's point
+                this.blob.points[i].velocity[1] *= -0.2; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
+            }
+        }
+    }
+
+    init_blob_world() {
+        var pos = this.blob.get_pos();
+        pos.push(pos[1]);
+        var colors = this.blob.get_color();
+        colors.push(colors[1]);
+        fill_buffer(this.pos_buffer, pos);
+        fill_buffer(this.color_buffer, colors);
+        this.num_vertices = this.blob.get_pos().length;
+    }
+
+    render(){
+        this.gl.useProgram(this.program);
+
+        var mM = mat4();
+        mM = mult(translate(this.blob.get_center().pos[0], this.blob.get_center().pos[1], 0), mM);
+        this.gl.uniformMatrix4fv(this.mMV, false, flatten(mM));
+        enable_attribute_buffer(this.vPosition, this.pos_buffer, 4);
+        enable_attribute_buffer(this.vColor, this.color_buffer, 4);
+        this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
+    }
+}
