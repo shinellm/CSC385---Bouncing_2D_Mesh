@@ -175,7 +175,7 @@ class Blob {
     }
 
     /**
-     * Creates smooth arcs between trios
+     * Creates smooth arcs between pairs
      * of this Blob's outer points.
      */
     Bezier() {
@@ -194,6 +194,7 @@ class Blob {
             this.deCasteljau(p0, p1, p2, p3);
             index += 1;
         }
+
     }
 
     get_points(){
