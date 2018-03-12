@@ -120,11 +120,11 @@ class Blob {
 
         var comp1 = subtract(p0.pos, p0.right_neighbor.pos);
         var vect1 = normalize(add(subtract(p0.pos, p0.right_neighbor.pos), subtract(p0.left_neighbor.pos, p0.pos)));
-        var pos1 = add(p0.pos,scale(-dot(vect1, comp1)/dot(vect1,vect1),vect1));
+        var pos1 = add(p0.pos,scale(-0.3333 * dot(vect1, comp1)/dot(vect1,vect1),vect1));
 
         var comp2 = subtract(p3.pos, p3.left_neighbor.pos);
         var vect2 = normalize(add(subtract(p3.pos, p3.left_neighbor.pos), subtract(p3.right_neighbor.pos, p3.pos)));
-        var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
+        var pos2 = add(p3.pos, scale(-0.3333 * dot(vect2,comp2)/dot(vect2,vect2), vect2));
 
         return [pos1, pos2];
     }
@@ -182,9 +182,9 @@ class Blob {
         this.pos = [];
         var index = 0;
 
-        while ((index + 2) <= this.num_points) {
+        while (index <= this.num_points) {
             var point0 = this.points[index % this.num_points];
-            var point3 = this.points[(index + 2) % this.num_points];
+            var point3 = this.points[(index + 1) % this.num_points];
             var inner_controls = this.calculate_controls(point0, point3);
             var p0 = point0.pos;
             var p1 = inner_controls[0];
@@ -192,7 +192,7 @@ class Blob {
             var p3 = point3.pos;
 
             this.deCasteljau(p0, p1, p2, p3);
-            index += 2;
+            index += 1;
         }
     }
 

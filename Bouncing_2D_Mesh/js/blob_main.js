@@ -49,7 +49,7 @@ function init(){
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var blob = new Blob(vec4(0,0,0,1), 0.25, 9);
+    var blob = new Blob(vec4(0,0,0,1), 0.25, 15);
     blob_world = new BlobWorld(blob, gl, program);
 
     //blob_world.init_blob_world();
