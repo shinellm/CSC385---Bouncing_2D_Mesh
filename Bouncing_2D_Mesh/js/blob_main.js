@@ -1,10 +1,13 @@
 // This is the main JS file.
 window.onload = init;
 
-const WIDTH = 964; //Current canvas width
-const HEIGHT = 546; //Current canvas height
+//const WIDTH = 964; //Current canvas width
+//const HEIGHT = 546; //Current canvas height
+
+var WIDTH; //Current canvas width
+var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
-var gravity = 0.001;
+var gravity = 0.01;
 var bounce_factor = 0.8;
 
 // Renders the frame.
@@ -26,6 +29,8 @@ function init(){
 
     // Initialize WebGL.
     canvas = document.getElementById("gl-canvas");
+    HEIGHT = canvas.height;
+    WIDTH = canvas.width;
     canvas.onclick = getMousePosition;
 
     gl = WebGLUtils.setupWebGL(canvas);
@@ -33,7 +38,7 @@ function init(){
     if (!gl){
         alert("WebGL isn't available");
     }
-    gl.viewport(0,0,canvas.width, canvas.height);
+    gl.viewport(WIDTH/10000, HEIGHT/10000,WIDTH, HEIGHT);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
@@ -55,6 +60,9 @@ function getMousePosition(event) {
     //var blob = blob_world.get_blob();
     mouse.x = event.clientX - canvas.offsetLeft; //Get the x-coordinate of the mouse
     mouse.y = event.clientY - canvas.offsetTop; //Get the y-coordinate of the mouse
+
+    //mouse.x = mouse.x / 10000;
+    //mouse.y = mouse.y / 10000;
 
     blob_world.new_position(mouse);
 

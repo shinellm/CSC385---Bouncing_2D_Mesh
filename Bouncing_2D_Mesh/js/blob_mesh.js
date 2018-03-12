@@ -260,8 +260,8 @@ class BlobWorld {
 
         //Do the same steps for each exterior point on the blob
         for (var i = 0; i < this.blob.num_points; i++) {
-            this.blob.points[i].pos[0] = mousex - this.blob.points[i].pos[0]; //Set the new position.x of the blob's point
-            this.blob.points[i].pos[1] = mousey - this.blob.points[i].pos[1]; //Set the new position.y of the blob's point
+            this.blob.points[i].pos[0] = mousex - this.blob.points[i].pos[0] + this.blob.rad; //Set the new position.x of the blob's point
+            this.blob.points[i].pos[1] = mousey - this.blob.points[i].pos[1] + this.blob.rad; //Set the new position.y of the blob's point
             this.blob.points[i].velocity[0] = 0; //Reset the velocity.x of the blob's point
             this.blob.points[i].velocity[1] = 0; //Reset the velocity.y of the blob's point
         }
