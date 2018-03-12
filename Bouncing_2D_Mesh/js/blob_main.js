@@ -1,55 +1,8 @@
 // This is the main JS file.
 window.onload = init;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-const WIDTH = 964; //Current canvas width
-const HEIGHT = 546; //Current canvas height
-
-const MAX_STEPS = 3;
-
-=======
-//const WIDTH = 964; //Current canvas width
-//const HEIGHT = 546; //Current canvas height
-
-var WIDTH; //Current canvas width
-var HEIGHT; //Current canvas height
->>>>>>> 568aead9e3ec58d30787efd762dd2062d632b5ca
-var mouse = {x:0, y:0};
-var gravity = 0.01;
-var bounce_factor = 0.8;
-<<<<<<< HEAD
-var dx = 0;
-var dy = 0;
-
-=======
->>>>>>> 568aead9e3ec58d30787efd762dd2062d632b5ca
-
-// Renders the frame.
-function render(){
-    setTimeout(function() {
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        blob_world.init_blob_world();
-        blob_world.render();
-        blob_world.free_fall(gravity);
-        //blob_world.evolve(HEIGHT, WIDTH);
-
-        requestAnimFrame(render);
-    }, 100);
-}
-
-=======
-
-//const WIDTH = 964; //Current canvas width
-//const HEIGHT = 546; //Current canvas height
-
 const FLATNESS = 0.001;
 
-
-//const WIDTH = 964; //Current canvas width
-//const HEIGHT = 546; //Current canvas height
-
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
@@ -74,7 +27,6 @@ function render(){
     }, 100);
 }
 
->>>>>>> Bezier
 
 function init(){
 
@@ -97,7 +49,7 @@ function init(){
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var blob = new Blob(vec4(0,0,0,1), 0.25, 16);
+    var blob = new Blob(vec4(0,0,0,1), 0.25, 9);
     blob_world = new BlobWorld(blob, gl, program);
 
     //blob_world.init_blob_world();

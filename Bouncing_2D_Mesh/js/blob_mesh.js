@@ -95,15 +95,9 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-<<<<<<< HEAD
-        console.log(this.points[1].pos);
-        console.log(this.points[3].pos);
-        console.log(this.calculate_controls(this.points[1], this.points[3]));
-=======
        // console.log(this.points[1].pos);
        // console.log(this.points[3].pos);
         //console.log(this.calculate_controls(this.points[1], this.points[3]));
->>>>>>> Bezier
 
         this.Bezier();
     }
@@ -151,11 +145,7 @@ class Blob {
      *      cage for this Blob's cubic Bezier curve.
      */
     deCasteljau(p0, p1, p2, p3) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> Bezier
         var t = 0.5;
         var p = add(p1, scale(0.5, subtract(p2,p1)));
         var difference = length(scale(0.125,add(add(p0,scale(4,p)),add(scale(-3,add(p1, p2)), p3))));
@@ -183,32 +173,24 @@ class Blob {
             this.deCasteljau(p13, p22, p31, p3);
         }
     }
-=======
->>>>>>> 568aead9e3ec58d30787efd762dd2062d632b5ca
 
-    }
-
-<<<<<<< HEAD
-=======
-
->>>>>>> Bezier
     /**
      * Creates smooth arcs between trios
      * of this Blob's outer points.
      */
     Bezier() {
+        this.pos = [];
         var index = 0;
 
         while ((index + 2) <= this.num_points) {
-            var p0 = this.points[index % this.num_points].pos;
-            var p3 = this.points[(index + 2) % this.num_points].pos;
-            var inner_controls = this.calculate_controls(p0, p3);
+            var point0 = this.points[index % this.num_points];
+            var point3 = this.points[(index + 2) % this.num_points];
+            var inner_controls = this.calculate_controls(point0, point3);
+            var p0 = point0.pos;
             var p1 = inner_controls[0];
             var p2 = inner_controls[1];
-<<<<<<< HEAD
-=======
             var p3 = point3.pos;
->>>>>>> Bezier
+
             this.deCasteljau(p0, p1, p2, p3);
             index += 2;
         }
@@ -350,6 +332,7 @@ class BlobWorld {
     }
 
     init_blob_world() {
+        this.get_blob().Bezier();
         var pos = this.blob.get_pos();
         pos.push(pos[1]);
         var colors = this.blob.get_color();
