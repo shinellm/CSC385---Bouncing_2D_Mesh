@@ -143,11 +143,6 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-        console.log(this.points[1].pos);
-        console.log(this.points[3].pos);
-        console.log(this.calculate_controls(this.points[1], this.points[3]));
-
-        //this.Bezier();
     }
 
     /**
@@ -211,14 +206,9 @@ class Blob {
         var p = add(p1, scale(0.5, subtract(p2,p1)));
         var difference = length(scale(0.125,add(add(p0,scale(4,p)),add(scale(-3,add(p1, p2)), p3))));
         if (difference <= FLATNESS) {
-            var u = vec4(0, 1/3, 2/3, 1);
 
             var points = [p0, p1, p2, p3];
             for (var i = 0; i < 4; i++) {
-              //  var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
-               // var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
-               // var b = this.special_dot(ts,M_b);
-               // var pos = this.special_dot(b, points);
                 this.pos.push(points[i]);
                 this.colors.push(vec4(1,0,0,1));
             }
@@ -403,9 +393,10 @@ class BlobWorld {
     }
 
     init_blob_world() {
-        //this.get_blob().Bezier();
+       // this.get_blob().Bezier();
         var pos = this.blob.get_pos();
         pos.push(pos[1]);
+        console.log(pos);
         var colors = this.blob.get_color();
         colors.push(colors[1]);
         fill_buffer(this.pos_buffer, pos);
