@@ -33,9 +33,35 @@
 
     <body>
 
-    <canvas id="gl-canvas" width="512" height="512">
-        Sorry; your browser doesn't support HTML5 canvas.
-    </canvas>
+    <div id="info-panel" style=" position: absolute; margin: 5px; padding: 5px; z-index: 99;
+        background-color: hsla(197, 58%, 49%, 0.53); border: 1px solid #c3c3aa;">
+        <h2>
+            Blob Experiment
+        </h2>
+        <p>
+            Use the keyboard
+            <b>
+                <a id="keyboardUp" href="#">up</a>
+                 /
+                <a id="keyboardDown" href="#">down</a>
+            </b>
+             arrows to change blob size.
+            <br>
+            Use the
+            <b>
+                <a id="keyboardLeft" href="#">left</a>
+                 /
+                <a id="keyboardRight" href="#">right</a>
+            </b>
+            arrows to change between the skins.
+        </p>
+    </div>
+    <div id="canvas-container" width="100%" style=" text-align:center; margin:auto;">
+        <canvas id="gl-canvas" width="964" height="546" style=" align-items: center; justify-content: center;
+        margin:auto; position: absolute; top: 0; bottom: 0; left: 0; right: 0; border:1px solid #000000;">
+            Sorry; your browser doesn't support HTML5 canvas.
+        </canvas>
+    </div>
 
     </body>
 </html>

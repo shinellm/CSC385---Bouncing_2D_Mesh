@@ -1,8 +1,13 @@
 // This is the main JS file.
 window.onload = init;
 
-const WIDTH = 256;
-const HEIGHT = 256;
+//const FLATNESS = 0.001;
+
+var WIDTH; //Current canvas width
+var HEIGHT; //Current canvas height
+var mouse = {x:0, y:0};
+var gravity = 0.01;
+var bounce_factor = 0.8;
 
 
 // Renders the frame.
@@ -10,57 +15,70 @@ function render(){
     setTimeout(function() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        var mM = mat4();
-        var blob = blob_world.get_blob();
-        mM = mult(translate(blob.get_center().pos[0], blob.get_center().pos[1], 0), mM);
-        gl.uniformMatrix4fv(mMV, false, flatten(mM));
-        enable_attribute_buffer(vPosition, pos_buffer, 4);
-        enable_attribute_buffer(vColor, color_buffer, 4);
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, num_vertices);
+        blob_world.init_blob_world();
+        blob_world.render();
+        blob_world.free_fall(gravity);
+        //blob_world.evolve(HEIGHT, WIDTH);
+
         requestAnimFrame(render);
-    }, 10);
-
+    }, 100);
 }
 
-function init_blob_world() {
-    var blob = blob_world.get_blob();
-    var pos = blob.get_pos();
-    pos.push(pos[1]);
-    var colors = blob.get_color();
-    colors.push(colors[1]);
-    fill_buffer(pos_buffer, pos);
-    fill_buffer(color_buffer, colors);
-    num_vertices = blob.get_pos().length;
-}
 
 function init(){
 
     // Initialize WebGL.
     canvas = document.getElementById("gl-canvas");
+    HEIGHT = canvas.height;
+    WIDTH = canvas.width;
+    canvas.onclick = getMousePosition;
+
     gl = WebGLUtils.setupWebGL(canvas);
+
     if (!gl){
         alert("WebGL isn't available");
     }
-    gl.viewport(0,0,canvas.width, canvas.height);
+    gl.viewport(0, 0,WIDTH, HEIGHT);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
     // Initialize shaders and attribute pointers.
     program = initShaders(gl, "vertex-shader", "fragment-shader");
-
     gl.useProgram(program);
-    vPosition = gl.getAttribLocation(program, "vPosition");
-    vColor = gl.getAttribLocation(program, "vColor");
-    mMV = gl.getUniformLocation(program, "mM");
 
-    var blob = new Blob(vec4(0,0,0,1), 0.25, 8);
-    blob_world = new BlobWorld(blob);
+    var blob = new Blob(vec4(0,0,0,1), 0.25, 10);
+    blob_world = new BlobWorld(blob, gl, program);
 
-    pos_buffer = gl.createBuffer();
-    color_buffer = gl.createBuffer();
-
-    init_blob_world();
+    //blob_world.init_blob_world();
 
     // Start rendering.
     render();
+
+}
+
+function getMousePosition(event) {
+    //var blob = blob_world.get_blob();
+    mouse.x = event.clientX - canvas.offsetLeft; //Get the x-coordinate of the mouse
+    mouse.y = event.clientY - canvas.offsetTop; //Get the y-coordinate of the mouse
+
+    //For testing purposes
+    console.log("Pixel x " + mouse.x);
+    console.log("Pixel y " + mouse.y);
+
+    var pixel_x = (mouse.x / canvas.width * WIDTH) - canvas.width/2;
+    var pixel_y = ((canvas.height - mouse.y) / canvas.height * HEIGHT) - canvas.height/2;
+    var point_clicked = vec2(Math.floor(pixel_x), Math.floor(pixel_y));
+
+    //For testing purposes
+    console.log("Transformed point clicked " + point_clicked);
+
+    mouse.x = point_clicked[0];
+    mouse.y = point_clicked[1];
+
+    //Set the new positions of each vertex
+    blob_world.new_position(mouse);
+
+    //For testing purposes
+    var coords = "X coords: " + mouse.x + ", Y coords: " + mouse.y;
+    console.log(coords); //Print the coordinates to the console
 }
