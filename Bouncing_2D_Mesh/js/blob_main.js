@@ -65,13 +65,15 @@ function getMousePosition(event) {
     console.log("Pixel x " + mouse.x);
     console.log("Pixel y " + mouse.y);
 
-    var pixel_x = (mouse.x / canvas.width * WIDTH) - canvas.width/2;
-    var pixel_y = ((canvas.height - mouse.y) / canvas.height * HEIGHT) - canvas.height/2;
-    var point_clicked = vec2(Math.floor(pixel_x), Math.floor(pixel_y));
+    //Convert the pixel to WebGL coordinates
+    var pixel_x = ((mouse.x / canvas.width * canvas.width) - canvas.width / 2);
+    var pixel_y = ((canvas.height - mouse.y) / canvas.height * canvas.height) - canvas.height / 2;
+    var point_clicked = vec2((Math.floor(pixel_x)) / (canvas.width / 2), (Math.floor(pixel_y)) / (canvas.height / 2));
 
     //For testing purposes
     console.log("Transformed point clicked " + point_clicked);
 
+    //Set WebGL coordinates for mouse.x and mouse.y
     mouse.x = point_clicked[0];
     mouse.y = point_clicked[1];
 
