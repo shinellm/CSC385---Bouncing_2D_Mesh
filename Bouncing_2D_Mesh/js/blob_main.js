@@ -6,9 +6,6 @@ const HEIGHT = 546; //Current canvas height
 var mouse = {x:0, y:0};
 var gravity = 0.001;
 var bounce_factor = 0.8;
-var dx = 0;
-var dy = 0;
-
 
 // Renders the frame.
 function render(){
