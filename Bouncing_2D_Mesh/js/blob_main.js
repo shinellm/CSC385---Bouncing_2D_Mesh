@@ -38,7 +38,7 @@ function init(){
     if (!gl){
         alert("WebGL isn't available");
     }
-    gl.viewport(0,0,WIDTH, HEIGHT);
+    gl.viewport(WIDTH/10000, HEIGHT/10000,WIDTH, HEIGHT);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
@@ -46,7 +46,7 @@ function init(){
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var blob = new Blob(vec4(WIDTH/100000,HEIGHT/100000,0,1), 0.25, 8);
+    var blob = new Blob(vec4(0,0,0,1), 0.25, 8);
     blob_world = new BlobWorld(blob, gl, program);
 
     //blob_world.init_blob_world();
