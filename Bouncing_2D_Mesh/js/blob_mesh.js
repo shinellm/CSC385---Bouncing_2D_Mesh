@@ -115,7 +115,7 @@ class Blob {
         this.pos = [];  //The positions of all points on the blobs perimeter and interior to color
         this.colors = [];  //The colors of the pixels to be rendered
         this.springs = []; // The spring connect from outer points to the center
-        this.pos.push(center);
+        this.pos.push(vec4(0,0,0,1));
         this.colors.push(vec4(0,1,0,1));
 
         var rotation_increment = 360/num_points;
@@ -337,6 +337,8 @@ class BlobWorld {
     new_position(mouse){
         var mousex = mouse.x; //x-coordinate of the mouse click
         var mousey = mouse.y; //y-coordinate of the mouse click
+        var dx; //Distance to translate for x-coordinate
+        var dy; //Distance to translate for y-coordinate
 
         console.log("Mousex " + mousex);
         console.log("Mousey " + mousey);
@@ -344,6 +346,9 @@ class BlobWorld {
         //For testing purposes
         console.log("Old Blob Center x " + this.blob.center.pos[0]);
         console.log("Old Blob Center y " + this.blob.center.pos[1]);
+
+        dx = mousex - this.blob.center.pos[0]; //Distance to translate the other points
+        dy = mousey - this.blob.center.pos[1]; //Distance to translate the other points
 
         this.blob.center.pos[0] = mousex; //Set the position.x of the blob's center to be mousex
         this.blob.center.pos[1] = mousey; //Set the position.y of the blob's center to be mousey
@@ -356,8 +361,8 @@ class BlobWorld {
 
         //Do the same steps for each exterior point on the blob
         for (var i = 0; i < this.blob.num_points; i++) {
-            this.blob.points[i].pos[0] = mousex - this.blob.points[i].pos[0] + this.blob.rad; //Set the new position.x of the blob's point
-            this.blob.points[i].pos[1] = mousey - this.blob.points[i].pos[1] + this.blob.rad; //Set the new position.y of the blob's point
+            this.blob.points[i].pos[0] += dx; //Set the new position.x of the blob's point
+            this.blob.points[i].pos[1] += dy; //Set the new position.y of the blob's point
             this.blob.points[i].velocity[0] = 0; //Reset the velocity.x of the blob's point
             this.blob.points[i].velocity[1] = 0; //Reset the velocity.y of the blob's point
         }
@@ -398,7 +403,7 @@ class BlobWorld {
     }
 
     init_blob_world() {
-        this.get_blob().Bezier();
+        //this.get_blob().Bezier();
         var pos = this.blob.get_pos();
         pos.push(pos[1]);
         var colors = this.blob.get_color();
