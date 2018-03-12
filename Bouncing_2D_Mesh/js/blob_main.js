@@ -1,14 +1,17 @@
 // This is the main JS file.
 window.onload = init;
 
-//const WIDTH = 964; //Current canvas width
-//const HEIGHT = 546; //Current canvas height
+const FLATNESS = 0.001;
 
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
 var gravity = 0.01;
 var bounce_factor = 0.8;
+var dx = 0;
+var dy = 0;
+
+
 
 // Renders the frame.
 function render(){
@@ -46,7 +49,7 @@ function init(){
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var blob = new Blob(vec4(0,0,0,1), 0.25, 8);
+    var blob = new Blob(vec4(0,0,0,1), 0.25, 10);
     blob_world = new BlobWorld(blob, gl, program);
 
     //blob_world.init_blob_world();

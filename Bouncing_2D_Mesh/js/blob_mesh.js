@@ -95,11 +95,11 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-        console.log(this.points[1].pos);
-        console.log(this.points[3].pos);
-        console.log(this.calculate_controls(this.points[1], this.points[3]));
+       // console.log(this.points[1].pos);
+       // console.log(this.points[3].pos);
+        //console.log(this.calculate_controls(this.points[1], this.points[3]));
 
-        //this.Bezier();
+        this.Bezier();
     }
 
     /**
@@ -120,11 +120,11 @@ class Blob {
 
         var comp1 = subtract(p0.pos, p0.right_neighbor.pos);
         var vect1 = normalize(add(subtract(p0.pos, p0.right_neighbor.pos), subtract(p0.left_neighbor.pos, p0.pos)));
-        var pos1 = add(p0.pos,scale(-dot(vect1, comp1)/dot(vect1,vect1),vect1));
+        var pos1 = add(p0.pos,scale(-0.3333 * dot(vect1, comp1)/dot(vect1,vect1),vect1));
 
         var comp2 = subtract(p3.pos, p3.left_neighbor.pos);
         var vect2 = normalize(add(subtract(p3.pos, p3.left_neighbor.pos), subtract(p3.right_neighbor.pos, p3.pos)));
-        var pos2 = add(p3.pos, scale(-dot(vect2,comp2)/dot(vect2,vect2), vect2));
+        var pos2 = add(p3.pos, scale(-0.3333 * dot(vect2,comp2)/dot(vect2,vect2), vect2));
 
         return [pos1, pos2];
     }
@@ -146,24 +146,55 @@ class Blob {
      */
     deCasteljau(p0, p1, p2, p3) {
 
+        var t = 0.5;
+        var p = add(p1, scale(0.5, subtract(p2,p1)));
+        var difference = length(scale(0.125,add(add(p0,scale(4,p)),add(scale(-3,add(p1, p2)), p3))));
+        if (difference <= FLATNESS) {
+            var u = vec4(0, 1/3, 2/3, 1);
+
+            var points = [p0, p1, p2, p3];
+            for (var i = 0; i < 4; i++) {
+              //  var ts = [1, u[i], Math.pow(u[i], 2), Math.pow(u[i], 3)];
+               // var M_b = [[1,0,0,0],[-3,3,0,0],[3,-6,3,0],[-1,3,-3,1]];
+               // var b = this.special_dot(ts,M_b);
+               // var pos = this.special_dot(b, points);
+                this.pos.push(points[i]);
+                this.colors.push(vec4(1,0,0,1));
+            }
+        } else {
+            var p11 = add(scale(1 - t, p0), scale(t, p1));
+            var p21 = add(scale(1 - t, p1), scale(t, p2));
+            var p31 = add(scale(1 - t, p2), scale(t, p3));
+            var p12 = add(scale(1 - t, p11), scale(t, p21));
+            var p22 = add(scale(1 - t, p21), scale(t, p31));
+            var p13 = add(scale(1 - t, p12), scale(t, p22));
+
+            this.deCasteljau(p0, p11, p12, p13);
+            this.deCasteljau(p13, p22, p31, p3);
+        }
     }
 
     /**
-     * Creates smooth arcs between trios
+     * Creates smooth arcs between pairs
      * of this Blob's outer points.
      */
     Bezier() {
+        this.pos = [];
         var index = 0;
 
-        while ((index + 2) <= this.num_points) {
-            var p0 = this.points[index % this.num_points].pos;
-            var p3 = this.points[(index + 2) % this.num_points].pos;
-            var inner_controls = this.calculate_controls(p0, p3);
+        while (index <= this.num_points) {
+            var point0 = this.points[index % this.num_points];
+            var point3 = this.points[(index + 1) % this.num_points];
+            var inner_controls = this.calculate_controls(point0, point3);
+            var p0 = point0.pos;
             var p1 = inner_controls[0];
             var p2 = inner_controls[1];
+            var p3 = point3.pos;
+
             this.deCasteljau(p0, p1, p2, p3);
-            index += 2;
+            index += 1;
         }
+
     }
 
     get_points(){
@@ -306,6 +337,7 @@ class BlobWorld {
     }
 
     init_blob_world() {
+        this.get_blob().Bezier();
         var pos = this.blob.get_pos();
         pos.push(pos[1]);
         var colors = this.blob.get_color();
