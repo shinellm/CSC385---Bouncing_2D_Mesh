@@ -174,24 +174,24 @@ var loop = function() {
         ball.position.y += ball.velocity.y*frameRate*100;
     }*/
 
-/*
-    // Handle collisions with the perimeter of the canvas
-    if (blob.pos.y > HEIGHT - blob.rad || blob.pos.x > WIDTH - blob.rad || blob.pos.x < blob.rad) {
-        blob.pos.y = HEIGHT - blob.rad;
-        //blob.pos.x = WIDTH/2;
+    /*
+        // Handle collisions with the perimeter of the canvas
+        if (blob.pos.y > HEIGHT - blob.rad || blob.pos.x > WIDTH - blob.rad || blob.pos.x < blob.rad) {
+            blob.pos.y = HEIGHT - blob.rad;
+            //blob.pos.x = WIDTH/2;
 
-        blob.velocity.x = 0; //Set the blob's velocity x
-        blob.velocity.y *= -bounce_factor; //Set the blob's velocity y
-    }
+            blob.velocity.x = 0; //Set the blob's velocity x
+            blob.velocity.y *= -bounce_factor; //Set the blob's velocity y
+        }
 
-    if (blob2.pos.y > HEIGHT - blob2.rad || blob2.pos.x > WIDTH - blob2.rad || blob2.pos.x < blob2.rad) {
-        blob2.pos.y = HEIGHT - blob2.rad;
-        //blob.pos.x = WIDTH/2;
+        if (blob2.pos.y > HEIGHT - blob2.rad || blob2.pos.x > WIDTH - blob2.rad || blob2.pos.x < blob2.rad) {
+            blob2.pos.y = HEIGHT - blob2.rad;
+            //blob.pos.x = WIDTH/2;
 
-        blob2.velocity.x = 0; //Set the blob's velocity x
-        blob2.velocity.y *= -bounce_factor; //Set the blob's velocity y
-    }
-    */
+            blob2.velocity.x = 0; //Set the blob's velocity x
+            blob2.velocity.y *= -bounce_factor; //Set the blob's velocity y
+        }
+        */
 
     if ( ! mouse.isDown )
     {
