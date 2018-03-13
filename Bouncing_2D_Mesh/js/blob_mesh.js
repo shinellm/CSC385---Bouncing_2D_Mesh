@@ -371,20 +371,60 @@ class BlobWorld {
     evolve(){
 
         //Check for collisions
-        if (this.blob.center.pos[1] + this.blob.rad > 1 || this.blob.center.pos[1] - this.blob.rad < -1 || this.blob.center.pos[0] + this.blob.rad > 1 || this.blob.center.pos[0] - this.blob.rad < -1) {
+        var BottomHit = false;
+        var TopHit = false;
+        var RightHit = false;
+        var LeftHit = false;
 
-            console.log("Before: Blob Center x " + this.blob.center.pos[0]);
-            console.log("Before: Blob Center y " + this.blob.center.pos[1]);
+        if (this.blob.center.pos[1] + this.blob.rad > 1) {
+            console.log("Top Hit");
+
+            this.blob.center.pos[1] = 1 - this.blob.rad;
+            this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
+            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+
+            TopHit = true;
+        }
+
+        if (this.blob.center.pos[1] - this.blob.rad < -1) {
+            console.log("Bottom Hit");
+
+            //console.log("Before: Blob Center x " + this.blob.center.pos[0]);
+            //console.log("Before: Blob Center y " + this.blob.center.pos[1]);
 
             this.blob.center.pos[1] = -1 + this.blob.rad;
             //blob.pos.x = WIDTH/2;
 
-            console.log("After: Blob Center x " + this.blob.center.pos[0]);
-            console.log("After: Blob Center y " + this.blob.center.pos[1]);
+            ///console.log("After: Blob Center x " + this.blob.center.pos[0]);
+            //console.log("After: Blob Center y " + this.blob.center.pos[1]);
 
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
             this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
 
+            BottomHit = true;
+        }
+
+        if (this.blob.center.pos[0] + this.blob.rad > 1) {
+            console.log("Right Hit");
+
+            this.blob.center.pos[0] = 1 - this.blob.rad;
+            this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
+            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+
+            RightHit = true;
+        }
+
+        if (this.blob.center.pos[0] - this.blob.rad < -1) {
+            console.log("Left Hit");
+
+            this.blob.center.pos[0] = -1 + this.blob.rad;
+            this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
+            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+
+            LeftHit = true;
+        }
+
+        if (BottomHit == true || BottomHit == true || RightHit == true || LeftHit == true) {
             var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
             var rotation_increment = 360 / this.blob.num_points;
 
@@ -403,35 +443,10 @@ class BlobWorld {
                 this.blob.points[i].velocity[1] *= -0.8; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
             }
         }
-
-
-        /*
-        //Check for collisions
-        for (var i = 0; i < this.blob.num_points; i++) {
-            if (this.blob.points[i].pos[1] > 1 || this.blob.points[i].pos[1] < -1 || this.blob.points[i].pos[0] > 1 || this.blob.points[i].pos[0] < -1) {
-                //this.blob.points[i].pos[1] = -1;
-                //blob.pos.x = WIDTH/2;
-
-                this.blob.points[i].velocity[0] = 0; //Set the velocity.x of the blob's point
-                this.blob.points[i].velocity[1] *= -0.8; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
-            }
-        }
-        */
-
-        /*
-        for (var i = 0; i < this.blob.num_points; i++) {
-            if (this.blob.points[i].pos[1] > 1 || this.blob.points[i].pos[1] < -1 || this.blob.points[i].pos[0] > 1 || this.blob.points[i].pos[0] < -1) {
-                this.blob.points[i].pos[1] = -1 + this.blob.rad;
-                //blob.pos.x = WIDTH/2;
-
-                this.blob.points[i].velocity[0] = 0; //Set the velocity.x of the blob's point
-                this.blob.points[i].velocity[1] *= -0.2; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
-            }
-        }*/
     }
 
     init_blob_world() {
-        //this.get_blob().Bezier();
+        this.get_blob().Bezier();
         var pos = this.blob.get_pos();
         var points = this.blob.get_points();
         var colors = this.blob.get_color();
