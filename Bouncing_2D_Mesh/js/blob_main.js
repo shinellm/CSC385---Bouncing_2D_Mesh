@@ -8,8 +8,8 @@ var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
 var start = {x:0, y:0};
 var drag_ok = false;
-var gravity = 0.001;
-var bounce_factor = 0.8;
+const gravity = 0.001;
+const bounce_factor = -0.8;
 
 
 // Renders the frame.
@@ -19,7 +19,7 @@ function render(){
 
         blob_world.init_blob_world();
 
-        blob_world.free_fall(gravity);
+        blob_world.free_fall();
         blob_world.render();
         blob_world.evolve();
 
@@ -142,7 +142,7 @@ function getMousePosition(event) {
 
     //For testing purposes
     var coords = "Pixel X coords: " + mouse.x + ", Pixel Y coords: " + mouse.y;
-    
+
     var point_clicked = convertToWebGLCoords(mouse);
 
     //Set WebGL coordinates for mouse.x and mouse.y

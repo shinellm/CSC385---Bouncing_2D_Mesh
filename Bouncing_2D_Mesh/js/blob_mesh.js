@@ -120,11 +120,12 @@ class Blob {
 
         var rotation_increment = 360/num_points;
 
-        var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
+        //var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
         //console.log("start point " + start_pos);
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
-            var pos = mult(rotateZ(ang_rot), start_pos);
+            var pos = mult(rotateZ(ang_rot), vec4(this.rad, 0, 0, 0));
+            pos = add(this.center.pos, pos);
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
@@ -312,7 +313,7 @@ class BlobWorld {
      * @param {number} gravity
      *      The gravity applied to the blob.
      */
-    free_fall(gravity){
+    free_fall(){
 
         this.blob.center.velocity[1] -= gravity; //Set the new velocity.y of the blob's center
         this.blob.center.pos[0] += this.blob.center.velocity[0]; //Set the new position.x of the blob's center
@@ -381,7 +382,7 @@ class BlobWorld {
 
             this.blob.center.pos[1] = 1 - this.blob.rad;
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             TopHit = true;
         }
@@ -399,7 +400,7 @@ class BlobWorld {
             //console.log("After: Blob Center y " + this.blob.center.pos[1]);
 
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             BottomHit = true;
         }
@@ -409,7 +410,7 @@ class BlobWorld {
 
             this.blob.center.pos[0] = 1 - this.blob.rad;
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             RightHit = true;
         }
@@ -419,20 +420,21 @@ class BlobWorld {
 
             this.blob.center.pos[0] = -1 + this.blob.rad;
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             LeftHit = true;
         }
 
-        if (BottomHit == true || BottomHit == true || RightHit == true || LeftHit == true) {
-            var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
+        if (TopHit == true || BottomHit == true || RightHit == true || LeftHit == true) {
+            //var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
             var rotation_increment = 360 / this.blob.num_points;
 
-            console.log("start pos " + start_pos);
+            //console.log("start pos " + start_pos);
 
             for (var i = 0; i < this.blob.num_points; i++) {
                 var ang_rot = i * rotation_increment;
-                var pos = mult(rotateZ(ang_rot), start_pos);
+                var pos = mult(rotateZ(ang_rot), vec4(this.blob.rad, 0, 0, 0));
+                pos = add(this.blob.center.pos, pos);
                 var point = new Point(pos);
 
                 this.blob.points[i].pos[0] = point.pos[0];
@@ -440,7 +442,7 @@ class BlobWorld {
                 //blob.pos.x = WIDTH/2;
 
                 this.blob.points[i].velocity[0] = 0; //Set the velocity.x of the blob's point
-                this.blob.points[i].velocity[1] *= -0.8; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
+                this.blob.points[i].velocity[1] *= bounce_factor; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
             }
         }
     }
