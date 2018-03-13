@@ -6,14 +6,14 @@ const CAMERA_FIXED = 1;
 const CAMERA_TRACKING = 2;
 
 // Constants for primary colors.
-const COLOR_WHITE = vec3(1.0,1.0,1.0);
-const COLOR_BLACK = vec3(0.0,0.0,0.0);
-const COLOR_CYAN = vec3(0.0,1.0,1.0);
-const COLOR_MAGENTA = vec3(1.0,0.0,1.0);
-const COLOR_YELLOW = vec3(1.0,1.0,0.0);
-const COLOR_RED = vec3(1.0,0.0,0.0);
-const COLOR_GREEN = vec3(0.0,1.0,0.0);
-const COLOR_BLUE = vec3(0.0,0.0,1.0);
+const COLOR_WHITE = vec4(1.0,1.0,1.0,1.0);
+const COLOR_BLACK = vec4(0.0,0.0,0.0,1.0);
+const COLOR_CYAN = vec4(0.0,1.0,1.0,1.0);
+const COLOR_MAGENTA = vec4(1.0,0.0,1.0,1.0);
+const COLOR_YELLOW = vec4(1.0,1.0,0.0,1.0);
+const COLOR_RED = vec4(1.0,0.0,0.0,1.0);
+const COLOR_GREEN = vec4(0.0,1.0,0.0,1.0);
+const COLOR_BLUE = vec4(0.0,0.0,1.0,1.0);
 
 
 function enable_attribute_buffer(attrib, buffer, stride){
