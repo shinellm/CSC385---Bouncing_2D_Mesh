@@ -121,6 +121,7 @@ class Blob {
         var rotation_increment = 360/num_points;
 
         var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
+        //console.log("start point " + start_pos);
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
             var pos = mult(rotateZ(ang_rot), start_pos);
