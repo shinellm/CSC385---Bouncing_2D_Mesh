@@ -382,7 +382,7 @@ class BlobWorld {
 
             this.blob.center.pos[1] = 1 - this.blob.rad;
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             TopHit = true;
         }
@@ -400,7 +400,7 @@ class BlobWorld {
             //console.log("After: Blob Center y " + this.blob.center.pos[1]);
 
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             BottomHit = true;
         }
@@ -410,7 +410,7 @@ class BlobWorld {
 
             this.blob.center.pos[0] = 1 - this.blob.rad;
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             RightHit = true;
         }
@@ -420,7 +420,7 @@ class BlobWorld {
 
             this.blob.center.pos[0] = -1 + this.blob.rad;
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
             LeftHit = true;
         }
