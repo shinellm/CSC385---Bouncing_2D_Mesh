@@ -120,11 +120,12 @@ class Blob {
 
         var rotation_increment = 360/num_points;
 
-        var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
+        //var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
         //console.log("start point " + start_pos);
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
-            var pos = mult(rotateZ(ang_rot), start_pos);
+            var pos = mult(rotateZ(ang_rot), vec4(this.rad, 0, 0, 0));
+            pos = add(this.center.pos, pos);
             var point = new Point(pos);
             point.index = i;
             this.points.push(point);
@@ -425,14 +426,15 @@ class BlobWorld {
         }
 
         if (BottomHit == true || BottomHit == true || RightHit == true || LeftHit == true) {
-            var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
+            //var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
             var rotation_increment = 360 / this.blob.num_points;
 
-            console.log("start pos " + start_pos);
+            //console.log("start pos " + start_pos);
 
             for (var i = 0; i < this.blob.num_points; i++) {
                 var ang_rot = i * rotation_increment;
-                var pos = mult(rotateZ(ang_rot), start_pos);
+                var pos = mult(rotateZ(ang_rot), vec4(this.blob.rad, 0, 0, 0));
+                pos = add(this.blob.center.pos, pos);
                 var point = new Point(pos);
 
                 this.blob.points[i].pos[0] = point.pos[0];
