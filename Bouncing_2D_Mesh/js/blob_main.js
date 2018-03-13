@@ -6,7 +6,7 @@ const FLATNESS = 0.001;
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
-var gravity = 0.01;
+var gravity = 0.001;
 var bounce_factor = 0.8;
 
 
@@ -16,8 +16,9 @@ function render(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         blob_world.init_blob_world();
-        blob_world.render();
+
         blob_world.free_fall(gravity);
+        blob_world.render();
         blob_world.evolve();
 
         requestAnimFrame(render);
@@ -46,10 +47,8 @@ function init(){
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var blob = new Blob(vec4(0,-0.5,0,1), 0.25, 7);
+    var blob = new Blob(vec4(0.25,0.25,0,1), 0.25, 8);
     blob_world = new BlobWorld(blob, gl, program);
-
-    //blob_world.init_blob_world();
 
     // Start rendering.
     render();
@@ -62,16 +61,12 @@ function getMousePosition(event) {
     mouse.y = event.clientY - canvas.offsetTop; //Get the y-coordinate of the mouse
 
     //For testing purposes
-    console.log("Pixel x " + mouse.x);
-    console.log("Pixel y " + mouse.y);
+    var coords = "Pixel X coords: " + mouse.x + ", Pixel Y coords: " + mouse.y;
 
     //Convert the pixel to WebGL coordinates
     var pixel_x = ((mouse.x / canvas.width * canvas.width) - canvas.width / 2);
     var pixel_y = ((canvas.height - mouse.y) / canvas.height * canvas.height) - canvas.height / 2;
     var point_clicked = vec2((Math.floor(pixel_x)) / (canvas.width / 2), (Math.floor(pixel_y)) / (canvas.height / 2));
-
-    //For testing purposes
-    console.log("Transformed point clicked " + point_clicked);
 
     //Set WebGL coordinates for mouse.x and mouse.y
     mouse.x = point_clicked[0];
@@ -81,6 +76,6 @@ function getMousePosition(event) {
     blob_world.new_position(mouse);
 
     //For testing purposes
-    var coords = "X coords: " + mouse.x + ", Y coords: " + mouse.y;
     console.log(coords); //Print the coordinates to the console
+    console.log("Transformed point clicked " + point_clicked);
 }
