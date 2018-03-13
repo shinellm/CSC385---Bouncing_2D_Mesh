@@ -1,12 +1,11 @@
 <!doctype html>
 <html>
 
-    <script id="vertex-shader" type="x-shader/x-vertex">
+<script id="vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
         attribute vec4 vColor;
         uniform mat4 mM;
         varying vec4 fColor;
-
         void main()
         {
             fColor = vColor;
@@ -14,25 +13,51 @@
         }
     </script>
 
-    <script id="fragment-shader" type="x-shader/x-fragment">
+<script id="fragment-shader" type="x-shader/x-fragment">
         precision mediump float;
         varying vec4 fColor;
-
         void main()
         {
             gl_FragColor = fColor;
         }
     </script>
 
-    <script type="text/javascript" src="js/webgl-utils.js"></script>
-    <script type="text/javascript" src="js/initShaders.js"></script>
-    <script type="text/javascript" src="js/MV.js"></script>
-    <script type="text/javascript" src="js/blob_main.js"></script>
-    <script type="text/javascript" src="js/blob_mesh.js"></script>
-    <script type="text/javascript" src="js/helpers.js"></script>
+<script type="text/javascript" src="js/webgl-utils.js"></script>
+<script type="text/javascript" src="js/initShaders.js"></script>
+<script type="text/javascript" src="js/MV.js"></script>
+<script type="text/javascript" src="js/blob_main.js"></script>
+<script type="text/javascript" src="js/blob_mesh.js"></script>
+<script type="text/javascript" src="js/helpers.js"></script>
 
-    <body>
+<body>
 
+<<<<<<< HEAD
+<div id="info-panel" style=" text-align: center; margin: 5px; margin-left: 62px; margin-right: 62px; padding: 5px; z-index: 99;
+        background-color: hsla(197, 58%, 49%, 0.53); border: 1px solid #c3c3aa;">
+    <h2 style=" margin-top: 5px; margin-bottom: 5px;">
+        Blob Experiment
+    </h2>
+    <p style=" margin-top: 5px; margin-bottom: 5px;">
+        Use the keyboard
+        <b>
+            <a id="keyboardUp" href="#">up</a>
+            /
+            <a id="keyboardDown" href="#">down</a>
+        </b>
+        arrows to change blob size.
+
+        Use the
+        <b>
+            <a id="keyboardLeft" href="#">left</a>
+            /
+            <a id="keyboardRight" href="#">right</a>
+        </b>
+        arrows to change between the skins.
+    </p>
+</div>
+<div id="canvas-container" width="100%" style=" text-align:center; margin:auto;">
+    <canvas id="gl-canvas" width="964" height="546" style=" align-items: center; justify-content: center;
+=======
     <div id="info-panel" style=" text-align: center; margin: 5px; margin-left: 62px; margin-right: 62px; padding: 5px; z-index: 99;
         background-color: hsla(197, 58%, 49%, 0.53); border: 1px solid #c3c3aa;">
         <h2 style=" margin-top: 5px; margin-bottom: 5px;">
@@ -58,10 +83,11 @@
     </div>
     <div id="canvas-container" width="100%" style=" text-align:center; margin:auto;">
         <canvas id="gl-canvas" width="964" height="546" style=" align-items: center; justify-content: center;
+>>>>>>> b3e971cce80001fd0d1f8fb925572c425fa8e1e6
         margin:auto; position: absolute; top: 0; bottom: 0; left: 0; right: 0; border:1px solid #000000;">
-            Sorry; your browser doesn't support HTML5 canvas.
-        </canvas>
-    </div>
+        Sorry; your browser doesn't support HTML5 canvas.
+    </canvas>
+</div>
 
-    </body>
+</body>
 </html>

@@ -8,7 +8,7 @@ var frameRate = 1/40; //seconds
 var frameDelay = frameRate * 1000; //ms
 var loopTimer;
 var mouse = {x:0, y:0};
-var gravity = 0.5;
+var gravity = 1;
 var bounce_factor = 0.8;
 
 var k = -20;
@@ -20,60 +20,60 @@ var b = -0.5;
 var center = {
     pos: {x: 450, y: 250},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 
 var blob = {
     pos: {x: 450, y: 200},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 
 var blob2 = {
     pos: {x: 485, y: 215},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 
 var blob3 = {
     pos:  {x: 500 , y: 250},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 
 var blob4 = {
     pos:  {x: 485 , y: 285},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 var blob5 = {
     pos:  {x: 450, y: 300},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 var blob6 = {
     pos:  {x: 415, y: 285},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 var blob7 = {
     pos:  {x: 400, y: 250},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 var blob8 = {
     pos:  {x: 415, y: 215},
     velocity: {x: 0, y: 0},
-    mass: 0.1, //kg
-    rad: 10 // 1px = 1cm
+    mass: 1, //kg
+    rad: 5 // 1px = 1cm
 };
 //var Cd = 0.47;  // Dimensionless
 //var rho = 1.22; // kg / m^3
@@ -193,7 +193,7 @@ var loop = function() {
         }
         */
 
-    if ( ! mouse.isDown )
+    if ( mouse.isDown )
     {
         var F_spring = k * ( (blob.pos.y - center.pos.y) - spring_length );
         var F_damper = b * ( blob.velocity.y - center.velocity.y );
