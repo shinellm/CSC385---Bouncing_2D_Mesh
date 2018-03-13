@@ -425,7 +425,7 @@ class BlobWorld {
             LeftHit = true;
         }
 
-        if (BottomHit == true || BottomHit == true || RightHit == true || LeftHit == true) {
+        if (TopHit == true || BottomHit == true || RightHit == true || LeftHit == true) {
             //var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
             var rotation_increment = 360 / this.blob.num_points;
 
