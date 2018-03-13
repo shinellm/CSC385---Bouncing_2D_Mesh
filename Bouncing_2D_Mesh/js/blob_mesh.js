@@ -115,12 +115,12 @@ class Blob {
         this.pos = [];  //The positions of all points on the blobs perimeter and interior to color
         this.colors = [];  //The colors of the pixels to be rendered
         this.springs = []; // The spring connect from outer points to the center
-        this.pos.push(vec4(0,0,0,1));
+        this.pos.push(this.center.pos);
         this.colors.push(vec4(0,1,0,1));
 
         var rotation_increment = 360/num_points;
 
-        var start_pos = add(vec4(0,0,0,1), vec4(rad, 0, 0, 0));
+        var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
             var pos = mult(rotateZ(ang_rot), start_pos);
@@ -231,6 +231,7 @@ class Blob {
      */
     Bezier() {
         this.pos = [];
+        this.pos.push(this.center.pos);
         var index = 0;
 
         while (index <= this.num_points) {
@@ -288,8 +289,15 @@ class BlobWorld {
         this.color_buffer = this.gl.createBuffer();
         this.vPosition = this.gl.getAttribLocation(program, "vPosition");
         this.vColor = gl.getAttribLocation(program, "vColor");
-        this.mMV = gl.getUniformLocation(program, "mM");
+        this.mM = gl.getUniformLocation(program, "mM");
         this.num_vertices = this.blob.get_pos().length;
+
+        var pos = this.blob.get_pos();
+        //var points = this.blob.get_points();
+        pos.push(pos[1]);
+        //points.push(points[1]);
+        var colors = this.blob.get_color();
+        colors.push(colors[1]);
     }
 
     get_blob() {
@@ -309,17 +317,11 @@ class BlobWorld {
         this.blob.center.pos[0] += this.blob.center.velocity[0]; //Set the new position.x of the blob's center
         this.blob.center.pos[1] += this.blob.center.velocity[1]; //Set the new position.y of the blob's center
 
-        //console.log("New Velocity Center y " + this.blob.center.velocity[1]);
-        //console.log("New Pos Center z " + this.blob.center.pos[2]);
-
-
         for (var i = 0; i < this.blob.num_points; i++) {
             this.blob.points[i].velocity[1] -= gravity; //Set the new velocity.y of the blob's point
             this.blob.points[i].pos[0] += this.blob.points[i].velocity[0]; //Set the new position.x of the blob's point
             this.blob.points[i].pos[1] += this.blob.points[i].velocity[1]; //Set the new position.y of the blob's point
 
-            //console.log("New Velocity Vertex y " + i + " " + this.blob.points[i].velocity[1]);
-            //console.log("New Pos Vertex z " + i + " " + this.blob.points[i].pos[2]);
         }
     }
 
@@ -337,13 +339,6 @@ class BlobWorld {
         var dx; //Distance to translate for x-coordinate
         var dy; //Distance to translate for y-coordinate
 
-        console.log("Mousex " + mousex);
-        console.log("Mousey " + mousey);
-
-        //For testing purposes
-        console.log("Old Blob Center x " + this.blob.center.pos[0]);
-        console.log("Old Blob Center y " + this.blob.center.pos[1]);
-
         dx = mousex - this.blob.center.pos[0]; //Distance to translate the other points
         dy = mousey - this.blob.center.pos[1]; //Distance to translate the other points
 
@@ -352,25 +347,13 @@ class BlobWorld {
         this.blob.center.velocity[0] = 0; //Reset the velocity.x of the blob's center
         this.blob.center.velocity[1] = 0; //Reset the velocity.y of the blob's center
 
-        //For testing purposes
-        console.log("New Blob Center x " + this.blob.center.pos[0]);
-        console.log("New Blob Center y " + this.blob.center.pos[1]);
-
         //Do the same steps for each exterior point on the blob
         for (var i = 0; i < this.blob.num_points; i++) {
-
-            //For testing purposes
-            console.log("Old Blob Vertex x " + i + " " + this.blob.points[i].pos[0]);
-            console.log("Old Blob Vertex y " + i + " " + this.blob.points[i].pos[1]);
 
             this.blob.points[i].pos[0] += dx; //Set the new position.x of the blob's point
             this.blob.points[i].pos[1] += dy; //Set the new position.y of the blob's point
             this.blob.points[i].velocity[0] = 0; //Reset the velocity.x of the blob's point
             this.blob.points[i].velocity[1] = 0; //Reset the velocity.y of the blob's point
-
-            //For testing purposes
-            console.log("New Blob Vertex x " + i + " " + this.blob.points[i].pos[0]);
-            console.log("New Blob Vertex y " + i + " " + this.blob.points[i].pos[1]);
 
         }
     }
@@ -388,24 +371,30 @@ class BlobWorld {
 
         //Check for collisions
         if (this.blob.center.pos[1] + this.blob.rad > 1 || this.blob.center.pos[1] - this.blob.rad < -1 || this.blob.center.pos[0] + this.blob.rad > 1 || this.blob.center.pos[0] - this.blob.rad < -1) {
+
+            console.log("Before: Blob Center x " + this.blob.center.pos[0]);
+            console.log("Before: Blob Center y " + this.blob.center.pos[1]);
+
             this.blob.center.pos[1] = -1 + this.blob.rad;
             //blob.pos.x = WIDTH/2;
 
-            //console.log("hit the ground");
+            console.log("After: Blob Center x " + this.blob.center.pos[0]);
+            console.log("After: Blob Center y " + this.blob.center.pos[1]);
+
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
             this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
 
             var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
-            var ang_rot;
-            var pos;
-            var rotation_increment = 360/this.blob.num_points;
-            var point;
+            var rotation_increment = 360 / this.blob.num_points;
+
+            console.log("start pos " + start_pos);
 
             for (var i = 0; i < this.blob.num_points; i++) {
-                    ang_rot = i * rotation_increment;
-                    pos = mult(rotateZ(ang_rot), start_pos);
-                    point = new Point(pos);
+                var ang_rot = i * rotation_increment;
+                var pos = mult(rotateZ(ang_rot), start_pos);
+                var point = new Point(pos);
 
+                this.blob.points[i].pos[0] = point.pos[0];
                 this.blob.points[i].pos[1] = point.pos[1];
                 //blob.pos.x = WIDTH/2;
 
@@ -443,10 +432,8 @@ class BlobWorld {
     init_blob_world() {
         //this.get_blob().Bezier();
         var pos = this.blob.get_pos();
-        pos.push(pos[1]);
-        //console.log(pos);
+        var points = this.blob.get_points();
         var colors = this.blob.get_color();
-        colors.push(colors[1]);
         fill_buffer(this.pos_buffer, pos);
         fill_buffer(this.color_buffer, colors);
         this.num_vertices = this.blob.get_pos().length;
@@ -455,9 +442,9 @@ class BlobWorld {
     render(){
         this.gl.useProgram(this.program);
 
-        var mM = mat4();
-        mM = mult(translate(this.blob.get_center().pos[0], this.blob.get_center().pos[1], 0), mM);
-        this.gl.uniformMatrix4fv(this.mMV, false, flatten(mM));
+        var M_mat = mat4();
+        M_mat = mult(translate(0,0,0), M_mat);
+        this.gl.uniformMatrix4fv(this.mM, false, flatten(M_mat));
         enable_attribute_buffer(this.vPosition, this.pos_buffer, 4);
         enable_attribute_buffer(this.vColor, this.color_buffer, 4);
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
