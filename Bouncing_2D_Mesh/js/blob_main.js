@@ -18,7 +18,7 @@ function render(){
         blob_world.init_blob_world();
         blob_world.render();
         blob_world.free_fall(gravity);
-        //blob_world.evolve(HEIGHT, WIDTH);
+        blob_world.evolve();
 
         requestAnimFrame(render);
     }, 100);
@@ -46,7 +46,7 @@ function init(){
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var blob = new Blob(vec4(0.5,0.5,0,1), 0.25, 7);
+    var blob = new Blob(vec4(0,-0.5,0,1), 0.25, 7);
     blob_world = new BlobWorld(blob, gl, program);
 
     //blob_world.init_blob_world();

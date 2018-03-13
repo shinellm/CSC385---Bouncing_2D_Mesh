@@ -309,10 +309,17 @@ class BlobWorld {
         this.blob.center.pos[0] += this.blob.center.velocity[0]; //Set the new position.x of the blob's center
         this.blob.center.pos[1] += this.blob.center.velocity[1]; //Set the new position.y of the blob's center
 
+        //console.log("New Velocity Center y " + this.blob.center.velocity[1]);
+        //console.log("New Pos Center z " + this.blob.center.pos[2]);
+
+
         for (var i = 0; i < this.blob.num_points; i++) {
             this.blob.points[i].velocity[1] -= gravity; //Set the new velocity.y of the blob's point
             this.blob.points[i].pos[0] += this.blob.points[i].velocity[0]; //Set the new position.x of the blob's point
             this.blob.points[i].pos[1] += this.blob.points[i].velocity[1]; //Set the new position.y of the blob's point
+
+            //console.log("New Velocity Vertex y " + i + " " + this.blob.points[i].velocity[1]);
+            //console.log("New Pos Vertex z " + i + " " + this.blob.points[i].pos[2]);
         }
     }
 
@@ -351,10 +358,20 @@ class BlobWorld {
 
         //Do the same steps for each exterior point on the blob
         for (var i = 0; i < this.blob.num_points; i++) {
+
+            //For testing purposes
+            console.log("Old Blob Vertex x " + i + " " + this.blob.points[i].pos[0]);
+            console.log("Old Blob Vertex y " + i + " " + this.blob.points[i].pos[1]);
+
             this.blob.points[i].pos[0] += dx; //Set the new position.x of the blob's point
             this.blob.points[i].pos[1] += dy; //Set the new position.y of the blob's point
             this.blob.points[i].velocity[0] = 0; //Reset the velocity.x of the blob's point
             this.blob.points[i].velocity[1] = 0; //Reset the velocity.y of the blob's point
+
+            //For testing purposes
+            console.log("New Blob Vertex x " + i + " " + this.blob.points[i].pos[0]);
+            console.log("New Blob Vertex y " + i + " " + this.blob.points[i].pos[1]);
+
         }
     }
 
@@ -367,36 +384,67 @@ class BlobWorld {
      * @param {number} w
      *      The width of the canvas.
      */
-    evolve(h, w){
-        var height = h;
-        var width = w;
+    evolve(){
 
         //Check for collisions
-
-        if (this.blob.center.pos[1] > height - this.blob.rad || this.blob.center.pos[0] > width - this.blob.rad || this.blob.center.pos[0] < this.blob.rad) {
-            this.blob.center.pos[1] = height - this.blob.rad;
+        if (this.blob.center.pos[1] + this.blob.rad > 1 || this.blob.center.pos[1] - this.blob.rad < -1 || this.blob.center.pos[0] + this.blob.rad > 1 || this.blob.center.pos[0] - this.blob.rad < -1) {
+            this.blob.center.pos[1] = -1 + this.blob.rad;
             //blob.pos.x = WIDTH/2;
 
+            //console.log("hit the ground");
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
-            this.blob.center.velocity[1] *= -0.2; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+            this.blob.center.velocity[1] *= -0.8; //Set the velocity.y of the blob's center (-0.2 = bounce factor)
+
+            var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
+            var ang_rot;
+            var pos;
+            var rotation_increment = 360/this.blob.num_points;
+            var point;
+
+            for (var i = 0; i < this.blob.num_points; i++) {
+                    ang_rot = i * rotation_increment;
+                    pos = mult(rotateZ(ang_rot), start_pos);
+                    point = new Point(pos);
+
+                this.blob.points[i].pos[1] = point.pos[1];
+                //blob.pos.x = WIDTH/2;
+
+                this.blob.points[i].velocity[0] = 0; //Set the velocity.x of the blob's point
+                this.blob.points[i].velocity[1] *= -0.8; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
+            }
         }
 
+
+        /*
+        //Check for collisions
         for (var i = 0; i < this.blob.num_points; i++) {
-            if (this.blob.points[i].pos[1] > height - this.blob.rad || this.blob.points[i].pos[0] > width - this.blob.rad || this.blob.points[i].pos[0] < this.blob.rad) {
-                this.blob.points[i].pos[1] = height - this.blob.rad;
+            if (this.blob.points[i].pos[1] > 1 || this.blob.points[i].pos[1] < -1 || this.blob.points[i].pos[0] > 1 || this.blob.points[i].pos[0] < -1) {
+                //this.blob.points[i].pos[1] = -1;
+                //blob.pos.x = WIDTH/2;
+
+                this.blob.points[i].velocity[0] = 0; //Set the velocity.x of the blob's point
+                this.blob.points[i].velocity[1] *= -0.8; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
+            }
+        }
+        */
+
+        /*
+        for (var i = 0; i < this.blob.num_points; i++) {
+            if (this.blob.points[i].pos[1] > 1 || this.blob.points[i].pos[1] < -1 || this.blob.points[i].pos[0] > 1 || this.blob.points[i].pos[0] < -1) {
+                this.blob.points[i].pos[1] = -1 + this.blob.rad;
                 //blob.pos.x = WIDTH/2;
 
                 this.blob.points[i].velocity[0] = 0; //Set the velocity.x of the blob's point
                 this.blob.points[i].velocity[1] *= -0.2; //Set the velocity.y of the blob's point (-0.2 = bounce factor)
             }
-        }
+        }*/
     }
 
     init_blob_world() {
-       // this.get_blob().Bezier();
+        //this.get_blob().Bezier();
         var pos = this.blob.get_pos();
         pos.push(pos[1]);
-        console.log(pos);
+        //console.log(pos);
         var colors = this.blob.get_color();
         colors.push(colors[1]);
         fill_buffer(this.pos_buffer, pos);
