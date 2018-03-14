@@ -24,7 +24,6 @@ function render(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         blob_world.init_blob_world();
-
         blob_world.free_fall();
         blob_world.render();
         blob_world.evolve();
@@ -206,7 +205,22 @@ function keyDown(event) {
     blob.rad = rad;
     blob.color_index = color_index;
 
-    //blob_world.set_colors(color_index, outside_color, inside_color);
+    //set_colors(color_index, outside_color, inside_color);
+    //set_colors();
+}
+
+function set_colors(){
+    var blob = blob_world.get_blob();
+    var color_array = blob.get_color();
+
+    for (var i = 0; i < color_array.length; i++){
+        if (i = 0){
+            color_array[i] = inside_color[color_index];
+        }
+        else{
+            color_array[i] = outside_color[color_index];
+        }
+    }
 }
 
 function convertToWebGLCoords(mouse) {
