@@ -2,16 +2,12 @@
 window.onload = init;
 
 const FLATNESS = 0.001;
-<<<<<<< HEAD
 const MIN_VELOCITY = .01;
-const MAX_HITS = 10;
-=======
 const gravity = 0.001;
 const bounce_factor = -0.8;
 const inside_color = [COLOR_YELLOW, COLOR_BLACK];
 const outside_color = [COLOR_BLUE, COLOR_WHITE];
 var color_index = 0;
->>>>>>> 9cab32d2d730ff07f6a4cc559443f5fd3d2fbebd
 
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
@@ -207,14 +203,6 @@ function keyDown(event) {
     blob.rad = rad;
     blob.color_index = color_index;
 
-<<<<<<< HEAD
-    //For testing purposes
- //   console.log(coords); //Print the coordinates to the console
-    //console.log("Transformed point clicked " + point_clicked);
-=======
-    //blob_world.init_blob_world();
-    //render();
->>>>>>> 9cab32d2d730ff07f6a4cc559443f5fd3d2fbebd
 }
 
 function convertToWebGLCoords(mouse) {
