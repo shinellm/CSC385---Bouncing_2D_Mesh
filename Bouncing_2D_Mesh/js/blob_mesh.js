@@ -8,7 +8,7 @@ class Point {
     constructor(pos){
 
         this.pos = pos;  //When setting new pos values, be sure to include 1 as w-value, always.
-        this.mass = 1;  //all unit mass
+        this.mass = 0.01;  //all unit mass
         this.velocity = vec4(0,0,0,0);  //all start out stagnant
         this.left_neighbor = null;
         this.right_neighbor = null;
@@ -67,31 +67,19 @@ class Spring {
      * @param center
      * @param ideallength
      */
+
     springforce(point1, point2, ideallength) {
 
-        var xlength = Math.abs(point1[0] - point2[0]);
-        var ylength = Math.abs(point1[1] - point2[1]);
-        var springlength = Math.sqrt(xlength*xlength + ylength*ylength); //calculate spring length
+        var p1 = point1;
+        var p2 = point2;
+        var xlength = Math.abs(p1[0] - p2[0]);
+        var ylength = Math.abs(p1[1] - p2[1]);
+        var springlength = Math.sqrt(Math.pow(xlength, 2) + Math.pow(ylength, 2)); //calculate spring length
 
 
+        var force = - this.k * (springlength - ideallength);  //calculate spring force using f=-kx
 
-        this.force = -this.k * (springlength - ideallength);  //calculate spring force using f=-kx
-
-
-        return this.force;
-
-
-        /*
-
-        this.a = this.force /(center.mass + point.mass);     //calculate acceleration using f=ma
-        this.velocity[0] = this.damp * (this.velocity[0] + this.a);     // x velocity with a damping term
-        this.newxpos = point[0]  + this.velocity[0];           // Updated position
-        this.velocity[1] = this.damp * (this.velocity[1] + this.a);         //y velocity with a damping term
-        this.newypos = point[1]  + this.velocity[1];           // Updated position
-
-        var newpoint = vec4(this.newxpos,this.newypos,0,1);
-        return newpoint;
-        */
+        return force;
 
     }
 
@@ -118,17 +106,19 @@ class Blob {
         this.center = new Point(center);
         this.rad = rad;
         this.num_points = num_points;
+        this.dragPoint = null;
         this.points = [];  //The outer points that track collision and user interaction
         this.pos = [];  //The positions of all points on the blobs perimeter and interior to color
         this.colors = [];  //The colors of the pixels to be rendered
         this.centersprings = []; // The spring connect from outer points to the center
         this.outersprings = [];
-        this.springs = []; // The spring connect from outer points to the center
+
         this.color_index = color_index;
         this.pos.push(this.center.pos);
         this.colors.push(inside_color[this.color_index]);
 
         var rotation_increment = 360/num_points;
+        var drag_increment = Math.floor(num_points/4);
 
         //var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
         //console.log("start point " + start_pos);
@@ -140,6 +130,10 @@ class Blob {
             point.index = i;
             this.points.push(point);
             this.pos.push(point.pos);
+            this.colors.push(vec4(1,0,0,1));
+            if (i == drag_increment) {
+                this.dragPoint = point;
+            }
             this.colors.push(outside_color[this.color_index]);
         }
 
@@ -157,7 +151,7 @@ class Blob {
 
 
         //Connect springs
-       this.outerspringlength = 2 * Math.cos(rotation_increment/2) * this.rad; //length of outer springs
+        this.outerspringlength = 2 * Math.cos(rotation_increment/2) * this.rad; //length of outer springs
         for (var i = 0; i < this.num_points; i++) {
             this.centersprings[i] = new Spring(this.points[i], this.center, this.rad);
             this.outersprings[i] = new Spring(this.points[i],this.points[i].left_neighbor,this.outerspringlength);
@@ -239,6 +233,8 @@ class Blob {
     Bezier() {
         this.pos = [];
         this.pos.push(this.center.pos);
+        this.colors = [];
+        this.colors.push(inside_color[this.color_index]);
         var index = 0;
 
         while (index <= this.num_points) {
@@ -298,8 +294,13 @@ class BlobWorld {
         this.vColor = gl.getAttribLocation(program, "vColor");
         this.mM = gl.getUniformLocation(program, "mM");
         this.num_vertices = this.blob.get_pos().length;
+        this.x = 0.7;
+        this.curr_pos = new Point(vec4(0,0,0,1));
+        this.mass = 0.1/WIDTH/2;
+        this.ks =  0.2/WIDTH/2;
 
-        this.damp = 0.5;
+        this.pointmass = this.blob.center.mass;
+        this.damp = 0.01;
         var pos = this.blob.get_pos();
         //var points = this.blob.get_points();
         pos.push(pos[1]);
@@ -338,19 +339,16 @@ class BlobWorld {
         this.blob.center.velocity[1] -= gravity; //Set the new velocity.y of the blob's center
         this.blob.center.pos[0] += this.blob.center.velocity[0]; //Set the new position.x of the blob's center
         this.blob.center.pos[1] += this.blob.center.velocity[1]; //Set the new position.y of the blob's center
+        console.log(this.blob.center.velocity);
 
         for (var i = 0; i < this.blob.num_points; i++) {
             this.blob.points[i].velocity[1] -= gravity; //Set the new velocity.y of the blob's point
             this.blob.points[i].pos[0] += this.blob.points[i].velocity[0]; //Set the new position.x of the blob's point
-            this.blob.points[i].pos[1] += this.blob.points[i].velocity[1]; //Set the new position.y of the blob's point
 
+            this.blob.points[i].pos[1] += this.blob.points[i].velocity[1]; //Set the new position.y of the blob's point
         }
     }
 
-    updatepos() {
-
-
-    }
 
     /**
      * Sets every point on the blob to a new position
@@ -360,35 +358,137 @@ class BlobWorld {
      * @param {object} mouse
      *      The position of the mouse click on the canvas.
      */
-    new_position(mouse){
+    new_position1(mouse){
         var mousex = mouse.x; //x-coordinate of the mouse click
         var mousey = mouse.y; //y-coordinate of the mouse click
+
         var dx; //Distance to translate for x-coordinate
         var dy; //Distance to translate for y-coordinate
 
-        dx = mousex - this.blob.points[2].pos[0]; //Distance to translate the other points
-        dy = mousey - this.blob.points[2].pos[1]; //Distance to translate the other points
+        var start_index = Math.ceil(this.blob.num_points * .25);
+        dx = mousex - this.blob.points[start_index].pos[0]; //Distance to translate the other points
+        dy = mousey - this.blob.points[start_index].pos[1]; //Distance to translate the other points
 
-
-        this.blob.points[2].pos[0] = mousex; //Set the new position.x of the blob's point
-        this.blob.points[2].pos[1] = mousey; //Set the new position.y of the blob's point
-        this.blob.points[2].velocity[0] = 0; //Reset the velocity.x of the blob's point
-        this.blob.points[2].velocity[1] = 0; //Reset the velocity.y of the blob's point
+        this.blob.points[start_index].pos[0] = mousex; //Set the new position.x of the blob's point
+        this.blob.points[start_index].pos[1] = mousey; //Set the new position.y of the blob's point
+        this.blob.points[start_index].velocity[0] = 0; //Reset the velocity.x of the blob's point
+        this.blob.points[start_index].velocity[1] = 0; //Reset the velocity.y of the blob's point
         //Do the same steps for each exterior point on the blob
+
+        this.curr_pos[0] = mousex;
+        this.curr_pos[1] = mousey - this.blob.rad;
 
         this.blob.center.pos[0] += dx; //Set the new position.x of the blob's point
         this.blob.center.pos[1] += dy; //Set the new position.y of the blob's point
         this.blob.center.velocity[0] = 0; //Reset the velocity.x of the blob's point
         this.blob.center.velocity[1] = 0; //Reset the velocity.y of the blob's point
 
+
+
         for (var i = 0; i < this.blob.num_points; i++) {
 
-
-            if (i !== 2) {
+            if (i !== start_index) {
+            //if (i !== this.blob.num_points*90/360) {
                 this.blob.points[i].pos[0] += dx; //Set the position.x of the blob's center to be mousex
                 this.blob.points[i].pos[1] += dy; //Set the position.y of the blob's center to be mousey
                 this.blob.points[i].velocity[0] = 0; //Reset the velocity.x of the blob's center
                 this.blob.points[i].velocity[1] = 0; //Reset the velocity.y of the blob's center
+            }
+        }
+
+        this.updatepos();
+    }
+
+    new_position(mouse){
+        var mousex = mouse.x; //x-coordinate of the mouse click
+        var mousey = mouse.y; //y-coordinate of the mouse click
+
+        var dx; //Distance to translate for x-coordinate
+        var dy; //Distance to translate for y-coordinate
+
+        dx = mousex - this.blob.center.pos[0]; //Distance to translate the other points
+        dy = mousey - this.blob.center.pos[1]; //Distance to translate the other points
+
+        var V = vec4(dx, dy, 0, 0);
+
+        this.blob.center.pos[0] = mousex; //Set the new position.x of the blob's point
+        this.blob.center.pos[1] = mousey; //Set the new position.y of the blob's point
+        this.blob.center.velocity[0] = V[0]; //Reset the velocity.x of the blob's point
+        this.blob.center.velocity[1] = V[1]; //Reset the velocity.y of the blob's point
+        //Do the same steps for each exterior point on the blob
+
+        this.curr_pos[0] = mousex;
+        this.curr_pos[1] = mousey - this.blob.rad;
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+
+                //if (i !== this.blob.num_points*90/360) {
+                this.blob.points[i].pos[0] += dx; //Set the position.x of the blob's center to be mousex
+                this.blob.points[i].pos[1] += dy; //Set the position.y of the blob's center to be mousey
+                this.blob.points[i].velocity[0] = V[0]; //Reset the velocity.x of the blob's center
+                this.blob.points[i].velocity[1] = V[1]; //Reset the velocity.y of the blob's center
+
+        }
+
+        this.updatepos();
+    }
+
+
+    updatepos() {
+
+        var gforce = this.blob.num_points * this.mass;
+
+
+
+        var F = gforce/(1 + 2 * Math.cos(Math.cos(Math.PI/4)));
+
+
+        this.dy = - F/this.ks;
+
+        if (Math.abs(this.blob.center.pos[1] - this.curr_pos[1]) < 0.2) { //adjust to canvas radio
+
+            this.blob.center.velocity[1] -= gravity ;
+            this.blob.center.pos[0] += this.blob.center.velocity[0];
+            this.blob.center.pos[1] += this.blob.center.velocity[1];
+
+            for (var i = 0; i < this.blob.num_points; i++) {
+
+                if (i !== this.blob.num_points*90/360) {
+                    this.blob.points[i].velocity[1] -= gravity ;
+                    this.blob.points[i].pos[0] += this.blob.points[i].velocity[0];
+                    this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
+
+                }
+
+            }
+            this.upupdate();
+        }
+
+
+    }
+
+    upupdate(){
+
+        var f = - this.ks * (- this.dy);
+
+        console.log("force" + f);
+        console.log("dy" + this.dy);
+
+        this.a =  f /(this.blob.num_points * this.mass);     //calculate acceleration using f=ma
+
+
+        this.blob.center.velocity[1] = this.damp * (this.blob.center.velocity[1] + this.a);
+
+        this.blob.center.pos[1] += this.blob.center.velocity[1];
+
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+
+
+            if (i !==this.blob.num_points*90/360) {
+
+                this.blob.points[i].velocity[1] = this.damp * (this.blob.points[i].velocity[1] + this.a);
+                this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
             }
         }
 
@@ -403,7 +503,7 @@ class BlobWorld {
      * @param {number} w
      *      The width of the canvas.
      */
-    evolve(){
+    evolve1(){
 
         //Check for collisions
         var BottomHit = false;
@@ -424,18 +524,28 @@ class BlobWorld {
         if (this.blob.center.pos[1] - this.blob.rad < -1) {
             console.log("Bottom Hit");
 
-            //console.log("Before: Blob Center x " + this.blob.center.pos[0]);
-            //console.log("Before: Blob Center y " + this.blob.center.pos[1]);
-
             this.blob.center.pos[1] = -1 + this.blob.rad;
-            //blob.pos.x = WIDTH/2;
-
-            ///console.log("After: Blob Center x " + this.blob.center.pos[0]);
-            //console.log("After: Blob Center y " + this.blob.center.pos[1]);
 
             this.blob.center.velocity[0] = 0; //Set the velocity.x of the blob's center
             this.blob.center.velocity[1] *= bounce_factor; //Set the velocity.y of the blob's center
 
+
+            for (var i = 0; i < this.blob.num_points; i++) {
+
+                if (i !== this.blob.num_points*270/360) {
+
+                    this.blob.points[i].velocity[1] += bounce_factor /60;  //adjust to canvas radio
+                    this.blob.points[i].pos[0] += this.blob.points[i].velocity[0];
+                    this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
+                }
+
+                else {
+                    this.blob.points[i].velocity[1] += bounce_factor /45;  //adjust to canvas radio
+                    this.blob.points[i].pos[0] += this.blob.points[i].velocity[0];
+                    this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
+                }
+            }
+            this.blob.center.pos[1] += this.blob.center.velocity[1];
             BottomHit = true;
         }
 
@@ -481,11 +591,111 @@ class BlobWorld {
         }
     }
 
+    /**
+     * Evolves the blob by moving every point on the
+     * blob and checks for collisions with the canvas.
+     *
+     * @param {number} h
+     *      The height of the canvas.
+     * @param {number} w
+     *      The width of the canvas.
+     */
+    evolve(){
+
+        //Check for collisions
+        var RightHit = false;
+        var LeftHit = false;
+        var BottomHit = false;
+        var TopHit = false;
+
+        var side_wall = vec4(1/(WIDTH/2),0,0,0);  //Scales a unit normal to the size of a pixel,
+        var ceil_or_floor = vec4(0,1/(HEIGHT/2),0,0);  //given the canvas's dimensions
+        var ref_vec = vec4(0,0,0,0);
+
+        if ((this.blob.center.pos[1] - this.blob.rad) < -1 || (this.blob.center.pos[1] + this.blob.rad) > 1) {
+
+            ref_vec = subtract(scale(2 * dot(this.blob.center.velocity, ceil_or_floor), ceil_or_floor), this.blob.center.velocity);
+            this.blob.center.velocity = ref_vec;
+        }
+
+        if (((this.blob.center.pos[0] + this.blob.rad) > 1) || ((this.blob.center.pos[0] - this.blob.rad) < -1)) {
+
+            ref_vec = subtract(scale(2 * dot(this.blob.center.velocity, side_wall), side_wall), this.blob.center.velocity);
+            this.blob.center.velocity =  ref_vec;
+
+        }
+
+
+        if (Math.abs(this.blob.center.velocity[1]) < MIN_VELOCITY &&
+            length(Math.abs(this.blob.center.velocity)) != 0) {
+            console.log("before " + this.blob.center.velocity[1]);
+            this.blob.center.velocity = vec4(0,0,0,0);
+            console.log("after" + this.blob.center.velocity[1]);
+
+        }
+
+
+        for (var i = 0; i < 2; ++i) {
+
+            if (this.blob.center.pos[i] - this.blob.rad < -1) {
+                if (i == 0) {
+                    LeftHit = true;
+                } else {
+                    BottomHit = true;
+                }
+                this.blob.center.pos[i] = -1 + this.blob.rad;
+            } else if (this.blob.center.pos[i] + this.blob.rad > 1) {
+                if (i == 0) {
+                    RightHit = true;
+                } else {
+                    TopHit = true;
+                }
+                this.blob.center.pos[i] = 1 - this.blob.rad;
+            }
+
+        }
+
+
+        if (BottomHit == true || TopHit == true || RightHit == true || LeftHit == true) {
+
+                if (this.blob.center.velocity[0] > 0 && this.blob.center.velocity[0] < 1) {
+                    this.blob.center.velocity[0] -= 0.005;
+                } else if (this.blob.center.velocity[0] > -1 && this.blob.center.velocity[0] < 0) {
+                    this.blob.center.velocity[0] += 0.005;
+                }
+
+            this.blob.center.velocity[1] *= -bounce_factor;
+
+
+           // this.blob.center.velocity[1] *= 0.8;
+            //var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
+
+            for (var i = 0; i < this.blob.num_points; i++) {
+                this.blob.points[i].velocity = this.blob.center.velocity;
+            }
+        }
+
+        var rotation_increment = 360 / this.blob.num_points;
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+            var ang_rot = i * rotation_increment;
+            var pos = mult(rotateZ(ang_rot), vec4(this.blob.rad, 0, 0, 0));
+            pos = add(this.blob.center.pos, pos);
+            //pos[3] = 1;
+            var point = new Point(pos);
+            this.blob.points[i].pos[0] = point.pos[0];
+            this.blob.points[i].pos[1] = point.pos[1];
+            //blob.pos.x = WIDTH/2;
+        }
+    }
+
     init_blob_world() {
         this.get_blob().Bezier();
         var pos = this.blob.get_pos();
         var points = this.blob.get_points();
+        pos.push(pos[1]);
         var colors = this.blob.get_color();
+        colors.push(colors[1]);
         fill_buffer(this.pos_buffer, pos);
         fill_buffer(this.color_buffer, colors);
         this.num_vertices = this.blob.get_pos().length;
@@ -501,4 +711,6 @@ class BlobWorld {
         enable_attribute_buffer(this.vColor, this.color_buffer, 4);
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
     }
+
+
 }
