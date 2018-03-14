@@ -2,8 +2,12 @@
 window.onload = init;
 
 const FLATNESS = 0.001;
-const gravity = 0.001;
-const bounce_factor = -0.8;
+const gravity = 0.005;
+
+
+
+
+const bounce_factor = -0.6;
 const inside_color = [COLOR_YELLOW, COLOR_BLACK];
 const outside_color = [COLOR_BLUE, COLOR_WHITE];
 var color_index = 0;
@@ -24,6 +28,7 @@ function render(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         blob_world.init_blob_world();
+
 
         blob_world.free_fall();
         blob_world.render();
@@ -162,6 +167,7 @@ function mouseMove(event) {
         // redraw the scene with the new positions
         //Set the new positions of each vertex
         blob_world.new_position(mouse);
+
 
         // reset the starting mouse position for the next mousemove
         start.x = mouse.x;
