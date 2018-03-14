@@ -47,10 +47,8 @@ function init(){
     canvas.onmouseup = mouseUp;
     canvas.onmousemove = mouseMove;
     document.onkeydown = keyDown;
-    //document.getElementById("keyboardUp").addEventListener("click", keyUp, false);
-    //document.getElementById("keyboardDown").addEventListener("click", keyDown, false);
-    //document.getElementById("keyboardLeft").addEventListener("click", keyLeft, false);
-    //document.getElementById("keyboardRight").addEventListener("click", keyRight, false);
+    var random_button = document.getElementById("Random");
+    random_button.addEventListener("click", random_listener);
 
     gl = WebGLUtils.setupWebGL(canvas);
 
@@ -70,6 +68,12 @@ function init(){
 
     // Start rendering.
     render();
+
+}
+
+function random_listener(){
+
+
 
 }
 
@@ -202,8 +206,7 @@ function keyDown(event) {
     blob.rad = rad;
     blob.color_index = color_index;
 
-    //blob_world.init_blob_world();
-    //render();
+    //blob_world.set_colors(color_index, outside_color, inside_color);
 }
 
 function convertToWebGLCoords(mouse) {
