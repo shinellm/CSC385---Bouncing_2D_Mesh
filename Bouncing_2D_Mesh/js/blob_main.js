@@ -3,8 +3,6 @@ window.onload = init;
 
 const FLATNESS = 0.001;
 const MIN_VELOCITY = .01;
-const gravity = 0.001;
-const bounce_factor = -0.8;
 const inside_color = [COLOR_YELLOW, COLOR_BLACK];
 const outside_color = [COLOR_BLUE, COLOR_WHITE];
 var color_index = 0;
@@ -13,7 +11,12 @@ var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
 var mouse = {x:0, y:0};
 var start = {x:0, y:0};
+var click_ok = false;
 var drag_ok = false;
+var version1 = false;
+var version2 = true;
+var gravity = 0.001;
+var bounce_factor = -0.5;
 
 var rad = 0.25;
 
@@ -29,7 +32,17 @@ function render(){
 
         blob_world.free_fall();
         blob_world.render();
-        blob_world.evolve();
+        if (version2) {
+            gravity = 0.005;
+            bounce_factor = -0.6
+            click_ok = true;
+            drag_ok = false;
+            blob_world.evolve1();
+        } else {
+            gravity = 0.001;
+            bounce_factor = -0.5;
+            blob_world.evolve();
+        }
 
         requestAnimFrame(render);
     }, 100);
@@ -76,6 +89,7 @@ function init(){
 }
 
 function getMousePosition(event) {
+    click_ok = true;
     //var blob = blob_world.get_blob();
     mouse.x = event.clientX - canvas.offsetLeft; //Get the x-coordinate of the mouse
     mouse.y = event.clientY - canvas.offsetTop; //Get the y-coordinate of the mouse
@@ -90,7 +104,11 @@ function getMousePosition(event) {
     mouse.y = point_clicked[1];
 
     //Set the new positions of each vertex
-    blob_world.new_position(mouse);
+    if (version1) {
+        blob_world.new_position(mouse);
+    } else {
+        blob_world.new_position1(mouse);
+    }
 
     //For testing purposes
     console.log(coords); //Print the coordinates to the console
@@ -144,6 +162,7 @@ function mouseUp(event) {
 function mouseMove(event) {
     // if we're dragging anything...
     var blob = blob_world.get_blob();
+    click_ok = false;
 
     if (drag_ok) {
 
@@ -163,7 +182,11 @@ function mouseMove(event) {
 
         // redraw the scene with the new positions
         //Set the new positions of each vertex
-        blob_world.new_position(mouse);
+        if (version1 == true) {
+            blob_world.new_position(mouse);
+        } else {
+            blob_world.new_position1(mouse);
+        }
 
 
         // reset the starting mouse position for the next mousemove
@@ -175,11 +198,10 @@ function mouseMove(event) {
 function keyDown(event) {
     var blob = blob_world.get_blob();
     switch (event.key) {
-        case "ArrowLeft":
-            console.log('left');
-            if (color_index != 0){
-                color_index -= 1;
-            }
+        case "ArrowRight":
+            console.log('right');
+            version1 = true;
+            version2 = false;
             break;
         case "ArrowUp":
             console.log('up');
@@ -188,11 +210,10 @@ function keyDown(event) {
                 blob.rad = rad;
             }
             break;
-        case "ArrowRight":
-            console.log('right');
-            if (color_index != (inside_color.length -1)){
-                color_index += 1;
-            }
+        case "ArrowLeft":
+            console.log('left');
+            version1 = false;
+            version2 = true;
             break;
         case "ArrowDown":
             console.log('down');
