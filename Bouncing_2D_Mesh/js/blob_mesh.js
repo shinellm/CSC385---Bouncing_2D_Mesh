@@ -44,38 +44,45 @@ class Point {
 class Spring {
 
 
-    constructor(point , center, restlength) {
+    constructor(point1 , point2, restlength) {
 
-        this.xpos = point[0];
-        this.ypos = point[1];
-        this.newxpos = point[0];
-        this.newypos = point[1];
+        this.point1 = point1;
+        this.point2 = point2;
 
 
         this.k = 0.2;    // Spring constant
-        this.damp = 2*Math.sqrt(this.k * point.mass);       // Damping
+
         this.ideallength = restlength;
         this.velocity = vec4(0,0,0,0);
         this.xvel = 0;   // x velocity
         this.yvel = 0;     // y velocity
         this.a = 0;    // acceleration
         this.force = 0;    // force
-}
+    }
 
     /**
      * takes two ends of a spring and the length of the spring when
      * it is at rest, calculates the spring force of the spring
      * @param point
      * @param center
-     * @param length
+     * @param ideallength
      */
-    spring_force(point, center, ideallength) {
+    springforce(point1, point2, ideallength) {
 
-        var xlength = Math.abs(point[0] - center[0]);
-        var ylength = Math.abs(point[1] - center[1]);
+        var xlength = Math.abs(point1[0] - point2[0]);
+        var ylength = Math.abs(point1[1] - point2[1]);
         var springlength = Math.sqrt(xlength*xlength + ylength*ylength); //calculate spring length
 
+
+
         this.force = -this.k * (springlength - ideallength);  //calculate spring force using f=-kx
+
+
+        return this.force;
+
+
+        /*
+
         this.a = this.force /(center.mass + point.mass);     //calculate acceleration using f=ma
         this.velocity[0] = this.damp * (this.velocity[0] + this.a);     // x velocity with a damping term
         this.newxpos = point[0]  + this.velocity[0];           // Updated position
@@ -84,11 +91,11 @@ class Spring {
 
         var newpoint = vec4(this.newxpos,this.newypos,0,1);
         return newpoint;
+        */
 
     }
 
 }
-
 
 
 class Blob {
@@ -107,7 +114,7 @@ class Blob {
      *      The number of points on the perimeter
      *      of this blob
      */
-    constructor(center, rad, num_points){
+    constructor(center, rad, num_points, color_index){
         this.center = new Point(center);
         this.rad = rad;
         this.num_points = num_points;
@@ -115,9 +122,12 @@ class Blob {
         this.points = [];  //The outer points that track collision and user interaction
         this.pos = [];  //The positions of all points on the blobs perimeter and interior to color
         this.colors = [];  //The colors of the pixels to be rendered
+        this.centersprings = []; // The spring connect from outer points to the center
+        this.outersprings = [];
         this.springs = []; // The spring connect from outer points to the center
+        this.color_index = color_index;
         this.pos.push(this.center.pos);
-        this.colors.push(vec4(0,1,0,1));
+        this.colors.push(inside_color[this.color_index]);
 
         var rotation_increment = 360/num_points;
         var drag_increment = Math.floor(num_points/4);
@@ -132,10 +142,14 @@ class Blob {
             point.index = i;
             this.points.push(point);
             this.pos.push(point.pos);
+<<<<<<< HEAD
             this.colors.push(vec4(1,0,0,1));
             if (i == drag_increment) {
                 this.dragPoint = point;
             }
+=======
+            this.colors.push(outside_color[this.color_index]);
+>>>>>>> 9cab32d2d730ff07f6a4cc559443f5fd3d2fbebd
         }
 
         //For each outer point, specifies its
@@ -150,20 +164,15 @@ class Blob {
             this.points[i].right_neighbor = this.points[((i + 1) % num_points)];
         }
 
-    }
 
-    /**
-     * Creates a spring from each outer point to the center
-     * @param num_points number of outer points
-     */
-    connect_spring(num_points) {
-
-
-        for (var i = 0; i < num_points; i++) {
-            this.springs[i] = new Spring(this.points[i], this.center, this.rad)
+        //Connect springs
+       this.outerspringlength = 2 * Math.cos(rotation_increment/2) * this.rad; //length of outer springs
+        for (var i = 0; i < this.num_points; i++) {
+            this.centersprings[i] = new Spring(this.points[i], this.center, this.rad);
+            this.outersprings[i] = new Spring(this.points[i],this.points[i].left_neighbor,this.outerspringlength);
         }
-
     }
+
 
     /**
      * Calculates the positions of
@@ -217,7 +226,7 @@ class Blob {
             var points = [p0, p1, p2, p3];
             for (var i = 0; i < 4; i++) {
                 this.pos.push(points[i]);
-                this.colors.push(vec4(1,0,0,1));
+                this.colors.push(outside_color[this.color_index]);
             }
         } else {
             var p11 = add(scale(1 - t, p0), scale(t, p1));
@@ -299,6 +308,7 @@ class BlobWorld {
         this.mM = gl.getUniformLocation(program, "mM");
         this.num_vertices = this.blob.get_pos().length;
 
+        this.damp = 0.5;
         var pos = this.blob.get_pos();
         //var points = this.blob.get_points();
         pos.push(pos[1]);
@@ -333,6 +343,11 @@ class BlobWorld {
         }
     }
 
+    updatepos() {
+
+
+    }
+
     /**
      * Sets every point on the blob to a new position
      * based on the position of the mouse click on
@@ -344,6 +359,7 @@ class BlobWorld {
     new_position(mouse){
         var mousex = mouse.x; //x-coordinate of the mouse click
         var mousey = mouse.y; //y-coordinate of the mouse click
+<<<<<<< HEAD
         var center = this.get_blob().center;
         var V = vec4(mousex - center.pos[0], mousey - center.pos[1], 0, 0);
         center.pos[0] = mousex;
@@ -354,7 +370,35 @@ class BlobWorld {
 
             this.blob.points[i].pos = add(this.blob.points[i].pos, V);
             this.blob.points[i].velocity = V;
+=======
+        var dx; //Distance to translate for x-coordinate
+        var dy; //Distance to translate for y-coordinate
 
+        dx = mousex - this.blob.points[2].pos[0]; //Distance to translate the other points
+        dy = mousey - this.blob.points[2].pos[1]; //Distance to translate the other points
+
+
+        this.blob.points[2].pos[0] = mousex; //Set the new position.x of the blob's point
+        this.blob.points[2].pos[1] = mousey; //Set the new position.y of the blob's point
+        this.blob.points[2].velocity[0] = 0; //Reset the velocity.x of the blob's point
+        this.blob.points[2].velocity[1] = 0; //Reset the velocity.y of the blob's point
+        //Do the same steps for each exterior point on the blob
+
+        this.blob.center.pos[0] += dx; //Set the new position.x of the blob's point
+        this.blob.center.pos[1] += dy; //Set the new position.y of the blob's point
+        this.blob.center.velocity[0] = 0; //Reset the velocity.x of the blob's point
+        this.blob.center.velocity[1] = 0; //Reset the velocity.y of the blob's point
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+
+>>>>>>> 9cab32d2d730ff07f6a4cc559443f5fd3d2fbebd
+
+            if (i !== 2) {
+                this.blob.points[i].pos[0] += dx; //Set the position.x of the blob's center to be mousex
+                this.blob.points[i].pos[1] += dy; //Set the position.y of the blob's center to be mousey
+                this.blob.points[i].velocity[0] = 0; //Reset the velocity.x of the blob's center
+                this.blob.points[i].velocity[1] = 0; //Reset the velocity.y of the blob's center
+            }
         }
 
     }
@@ -423,12 +467,21 @@ class BlobWorld {
 
         if (RightHit == true || LeftHit == true || TopHit == true || BottomHit == true) {
 
+<<<<<<< HEAD
                 if (this.blob.center.velocity[0] > 0 && this.blob.center.velocity[0] < 1) {
                     this.blob.center.velocity[0] -= 0.01;
                 } else if (this.blob.center.velocity[0] > -1 && this.blob.center.velocity[0] < 0) {
                     this.blob.center.velocity[0] += 0.01;
                 }
                 this.blob.center.velocity[1] *= bounce_factor;
+=======
+            LeftHit = true;
+        }
+
+        if (BottomHit == true || TopHit == true || RightHit == true || LeftHit == true) {
+            //var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
+            var rotation_increment = 360 / this.blob.num_points;
+>>>>>>> 9cab32d2d730ff07f6a4cc559443f5fd3d2fbebd
 
 
             for (var i = 0; i < this.blob.num_points; i++) {
@@ -473,4 +526,3 @@ class BlobWorld {
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
     }
 }
-
