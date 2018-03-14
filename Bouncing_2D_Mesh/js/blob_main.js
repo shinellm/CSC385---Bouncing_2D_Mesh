@@ -26,6 +26,7 @@ function render(){
 
         blob_world.init_blob_world();
 
+
         blob_world.free_fall();
         blob_world.render();
         blob_world.evolve();
@@ -163,6 +164,7 @@ function mouseMove(event) {
         // redraw the scene with the new positions
         //Set the new positions of each vertex
         blob_world.new_position(mouse);
+
 
         // reset the starting mouse position for the next mousemove
         start.x = mouse.x;

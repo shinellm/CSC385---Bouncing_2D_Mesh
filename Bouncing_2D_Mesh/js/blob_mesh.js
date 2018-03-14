@@ -8,7 +8,7 @@ class Point {
     constructor(pos){
 
         this.pos = pos;  //When setting new pos values, be sure to include 1 as w-value, always.
-        this.mass = 1;  //all unit mass
+        this.mass = 0.01;  //all unit mass
         this.velocity = vec4(0,0,0,0);  //all start out stagnant
         this.left_neighbor = null;
         this.right_neighbor = null;
@@ -67,31 +67,19 @@ class Spring {
      * @param center
      * @param ideallength
      */
+
     springforce(point1, point2, ideallength) {
 
-        var xlength = Math.abs(point1[0] - point2[0]);
-        var ylength = Math.abs(point1[1] - point2[1]);
-        var springlength = Math.sqrt(xlength*xlength + ylength*ylength); //calculate spring length
+        var p1 = point1;
+        var p2 = point2;
+        var xlength = Math.abs(p1[0] - p2[0]);
+        var ylength = Math.abs(p1[1] - p2[1]);
+        var springlength = Math.sqrt(Math.pow(xlength, 2) + Math.pow(ylength, 2)); //calculate spring length
 
 
+        var force = - this.k * (springlength - ideallength);  //calculate spring force using f=-kx
 
-        this.force = -this.k * (springlength - ideallength);  //calculate spring force using f=-kx
-
-
-        return this.force;
-
-
-        /*
-
-        this.a = this.force /(center.mass + point.mass);     //calculate acceleration using f=ma
-        this.velocity[0] = this.damp * (this.velocity[0] + this.a);     // x velocity with a damping term
-        this.newxpos = point[0]  + this.velocity[0];           // Updated position
-        this.velocity[1] = this.damp * (this.velocity[1] + this.a);         //y velocity with a damping term
-        this.newypos = point[1]  + this.velocity[1];           // Updated position
-
-        var newpoint = vec4(this.newxpos,this.newypos,0,1);
-        return newpoint;
-        */
+        return force;
 
     }
 
@@ -124,7 +112,7 @@ class Blob {
         this.colors = [];  //The colors of the pixels to be rendered
         this.centersprings = []; // The spring connect from outer points to the center
         this.outersprings = [];
-        this.springs = []; // The spring connect from outer points to the center
+
         this.color_index = color_index;
         this.pos.push(this.center.pos);
         this.colors.push(inside_color[this.color_index]);
@@ -304,8 +292,13 @@ class BlobWorld {
         this.vColor = gl.getAttribLocation(program, "vColor");
         this.mM = gl.getUniformLocation(program, "mM");
         this.num_vertices = this.blob.get_pos().length;
+        this.x = 0.7;
+        this.curr_pos = new Point(vec4(0,0,0,1));
+        this.mass = 0.1/WIDTH/2;
+        this.ks =  0.2/WIDTH/2;
 
-        this.damp = 0.5;
+        this.pointmass = this.blob.center.mass;
+        this.damp = 0.01;
         var pos = this.blob.get_pos();
         //var points = this.blob.get_points();
         pos.push(pos[1]);
@@ -369,18 +362,86 @@ class BlobWorld {
         this.blob.points[start_index].velocity[1] = V[1]; //Reset the velocity.y of the blob's point
         //Do the same steps for each exterior point on the blob
 
+        this.curr_pos[0] = mousex;
+        this.curr_pos[1] = mousey - this.blob.rad;
+
         this.blob.center.pos[0] += dx; //Set the new position.x of the blob's point
         this.blob.center.pos[1] += dy; //Set the new position.y of the blob's point
         this.blob.center.velocity[0] = V[0]; //Reset the velocity.x of the blob's point
         this.blob.center.velocity[1] = V[1]; //Reset the velocity.y of the blob's point
 
+
+
         for (var i = 0; i < this.blob.num_points; i++) {
 
             if (i !== start_index) {
+            //if (i !== this.blob.num_points*90/360) {
                 this.blob.points[i].pos[0] += dx; //Set the position.x of the blob's center to be mousex
                 this.blob.points[i].pos[1] += dy; //Set the position.y of the blob's center to be mousey
                 this.blob.points[i].velocity[0] = V[0]; //Reset the velocity.x of the blob's center
                 this.blob.points[i].velocity[1] = V[1]; //Reset the velocity.y of the blob's center
+            }
+        }
+
+        this.updatepos();
+    }
+
+
+    updatepos() {
+
+        var gforce = this.blob.num_points * this.mass;
+
+
+
+        var F = gforce/(1 + 2 * Math.cos(Math.cos(Math.PI/4)));
+
+
+        this.dy = - F/this.ks;
+
+        if (Math.abs(this.blob.center.pos[1] - this.curr_pos[1]) < 0.2) { //adjust to canvas radio
+
+            this.blob.center.velocity[1] -= gravity ;
+            this.blob.center.pos[0] += this.blob.center.velocity[0];
+            this.blob.center.pos[1] += this.blob.center.velocity[1];
+
+            for (var i = 0; i < this.blob.num_points; i++) {
+
+                if (i !== this.blob.num_points*90/360) {
+                    this.blob.points[i].velocity[1] -= gravity ;
+                    this.blob.points[i].pos[0] += this.blob.points[i].velocity[0];
+                    this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
+
+                }
+
+            }
+            this.upupdate();
+        }
+
+
+    }
+
+    upupdate(){
+
+        var f = - this.ks * (- this.dy);
+
+        console.log("force" + f);
+        console.log("dy" + this.dy);
+
+        this.a =  f /(this.blob.num_points * this.mass);     //calculate acceleration using f=ma
+
+
+        this.blob.center.velocity[1] = this.damp * (this.blob.center.velocity[1] + this.a);
+
+        this.blob.center.pos[1] += this.blob.center.velocity[1];
+
+
+        for (var i = 0; i < this.blob.num_points; i++) {
+
+
+            if (i !==this.blob.num_points*90/360) {
+
+                this.blob.points[i].velocity[1] = this.damp * (this.blob.points[i].velocity[1] + this.a);
+                this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
             }
         }
 
@@ -418,6 +479,23 @@ class BlobWorld {
             ref_vec = subtract(scale(2 * dot(this.blob.center.velocity, side_wall), side_wall), this.blob.center.velocity);
             this.blob.center.velocity =  ref_vec;
 
+            for (var i = 0; i < this.blob.num_points; i++) {
+
+                if (i !== this.blob.num_points*270/360) {
+
+                    this.blob.points[i].velocity[1] += bounce_factor /60;  //adjust to canvas radio
+                    this.blob.points[i].pos[0] += this.blob.points[i].velocity[0];
+                    this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
+                }
+
+                else {
+                    this.blob.points[i].velocity[1] += bounce_factor /45;  //adjust to canvas radio
+                    this.blob.points[i].pos[0] += this.blob.points[i].velocity[0];
+                    this.blob.points[i].pos[1] += this.blob.points[i].velocity[1];
+                }
+            }
+            this.blob.center.pos[1] += this.blob.center.velocity[1];
+            BottomHit = true;
         }
 
 
@@ -498,4 +576,6 @@ class BlobWorld {
         enable_attribute_buffer(this.vColor, this.color_buffer, 4);
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.num_vertices);
     }
+
+
 }
