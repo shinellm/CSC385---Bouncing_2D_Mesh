@@ -120,8 +120,6 @@ class Blob {
         var rotation_increment = 360/num_points;
         var drag_increment = Math.floor(num_points/4);
 
-        //var start_pos = add(this.center.pos, vec4(rad, 0, 0, 0));
-        //console.log("start point " + start_pos);
         for (var i = 0; i < num_points; i++) {
             var ang_rot = i * rotation_increment;
             var pos = mult(rotateZ(ang_rot), vec4(this.rad, 0, 0, 0));
@@ -339,7 +337,6 @@ class BlobWorld {
         this.blob.center.velocity[1] -= gravity; //Set the new velocity.y of the blob's center
         this.blob.center.pos[0] += this.blob.center.velocity[0]; //Set the new position.x of the blob's center
         this.blob.center.pos[1] += this.blob.center.velocity[1]; //Set the new position.y of the blob's center
-        console.log(this.blob.center.velocity);
 
         for (var i = 0; i < this.blob.num_points; i++) {
             this.blob.points[i].velocity[1] -= gravity; //Set the new velocity.y of the blob's point
@@ -471,16 +468,11 @@ class BlobWorld {
 
         var f = - this.ks * (- this.dy);
 
-        console.log("force" + f);
-        console.log("dy" + this.dy);
-
         this.a =  f /(this.blob.num_points * this.mass);     //calculate acceleration using f=ma
-
 
         this.blob.center.velocity[1] = this.damp * (this.blob.center.velocity[1] + this.a);
 
         this.blob.center.pos[1] += this.blob.center.velocity[1];
-
 
         for (var i = 0; i < this.blob.num_points; i++) {
 
@@ -573,8 +565,6 @@ class BlobWorld {
             //var start_pos = add(this.blob.center.pos, vec4(this.blob.rad, 0, 0, 0));
             var rotation_increment = 360 / this.blob.num_points;
 
-            //console.log("start pos " + start_pos);
-
             for (var i = 0; i < this.blob.num_points; i++) {
                 var ang_rot = i * rotation_increment;
                 var pos = mult(rotateZ(ang_rot), vec4(this.blob.rad, 0, 0, 0));
@@ -626,11 +616,8 @@ class BlobWorld {
         }
 
 
-        if (Math.abs(this.blob.center.velocity[1]) < MIN_VELOCITY &&
-            length(Math.abs(this.blob.center.velocity)) != 0) {
-            console.log("before " + this.blob.center.velocity[1]);
+        if (Math.abs(this.blob.center.velocity[1]) < MIN_VELOCITY && length(Math.abs(this.blob.center.velocity)) != 0) {
             this.blob.center.velocity = vec4(0,0,0,0);
-            console.log("after" + this.blob.center.velocity[1]);
 
         }
 

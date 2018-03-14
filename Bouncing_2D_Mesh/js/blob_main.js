@@ -34,7 +34,6 @@ function render(){
             gravity = 0.005;
             bounce_factor = -0.6
             click_ok = true;
-            drag_ok = false;
             blob_world.evolve1();
         } else {
             gravity = 0.001;
@@ -55,7 +54,6 @@ function init(){
     WIDTH = canvas.width;
 
     canvas.onclick = getMousePosition;
-    //canvas.dblclick = ;
     canvas.onmousedown = mouseDown;
     canvas.onmouseup = mouseUp;
     canvas.onmousemove = mouseMove;
@@ -141,8 +139,6 @@ function mouseDown(event) {
     start.x = mouse.x;
     start.y = mouse.y;
 
-   // console.log("start x " + start.x);
-   // console.log("start y " + start.y);
 }
 
 function mouseUp(event) {
@@ -183,7 +179,6 @@ function mouseMove(event) {
             blob_world.new_position1(mouse);
         }
 
-
         // reset the starting mouse position for the next mousemove
         start.x = mouse.x;
         start.y = mouse.y;
@@ -218,6 +213,7 @@ function keyDown(event) {
             break;
     }
     blob.rad = rad;
+}
 
 function convertToWebGLCoords(mouse) {
 
