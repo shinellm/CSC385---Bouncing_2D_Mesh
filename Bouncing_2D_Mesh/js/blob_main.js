@@ -28,8 +28,6 @@ function render(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         blob_world.init_blob_world();
-
-
         blob_world.free_fall();
         blob_world.render();
         if (version2) {
@@ -62,10 +60,7 @@ function init(){
     canvas.onmouseup = mouseUp;
     canvas.onmousemove = mouseMove;
     document.onkeydown = keyDown;
-    //document.getElementById("keyboardUp").addEventListener("click", keyUp, false);
-    //document.getElementById("keyboardDown").addEventListener("click", keyDown, false);
-    //document.getElementById("keyboardLeft").addEventListener("click", keyLeft, false);
-    //document.getElementById("keyboardRight").addEventListener("click", keyRight, false);
+    var random_button = document.getElementById("Random");
 
     gl = WebGLUtils.setupWebGL(canvas);
 
@@ -222,11 +217,7 @@ function keyDown(event) {
             }
             break;
     }
-    console.log(color_index);
     blob.rad = rad;
-    blob.color_index = color_index;
-
-}
 
 function convertToWebGLCoords(mouse) {
 

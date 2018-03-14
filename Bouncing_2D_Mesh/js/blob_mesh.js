@@ -313,6 +313,20 @@ class BlobWorld {
         return this.blob;
     }
 
+    /*
+    set_colors(index, outer, inner){
+        var color_array = this.blob.get_color();
+
+        for (var i = 0; i < color_array.length; i++){
+            if (i = 0){
+                color_array[i] = inner[index];
+            }
+            else{
+                color_array[i] = outer[index];
+            }
+        }
+    }*/
+
     /**
      * Sets every point on the blob to a new position
      * based on gravity.
