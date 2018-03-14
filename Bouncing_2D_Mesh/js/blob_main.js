@@ -2,6 +2,8 @@
 window.onload = init;
 
 const FLATNESS = 0.001;
+const MIN_VELOCITY = .01;
+const MAX_HITS = 10;
 
 var WIDTH; //Current canvas width
 var HEIGHT; //Current canvas height
@@ -92,8 +94,8 @@ function mouseDown(event) {
     start.x = mouse.x;
     start.y = mouse.y;
 
-    console.log("start x " + start.x);
-    console.log("start y " + start.y);
+   // console.log("start x " + start.x);
+   // console.log("start y " + start.y);
 }
 
 function mouseUp(event) {
@@ -153,8 +155,8 @@ function getMousePosition(event) {
     blob_world.new_position(mouse);
 
     //For testing purposes
-    console.log(coords); //Print the coordinates to the console
-    console.log("Transformed point clicked " + point_clicked);
+ //   console.log(coords); //Print the coordinates to the console
+    //console.log("Transformed point clicked " + point_clicked);
 }
 
 function convertToWebGLCoords(mouse) {
