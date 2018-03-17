@@ -19,7 +19,7 @@ The CSC385---Bouncing_2D_Mesh folder contains our current rendering of a Mesh mo
 	Sizing up the ball and clicking should resolve this.
 	
 
-The BlobExample folder holds a copy of Hakim El Hattab?s blob implementation that we hoped to build upon (https://lab.hakim.se/blob/03/).
+The BlobExample folder holds a copy of Hakim El Hattab's blob implementation that we hoped to build upon (https://lab.hakim.se/blob/03/).
 
 The SimpleBouncingBall and SpringTest are testing environments we wrote, which were later used in the creation of our blob implementation.
 
