@@ -1,7 +1,7 @@
 # CSC385---Bouncing_2D_Mesh
 
 The CSC385---Bouncing_2D_Mesh folder contains our current rendering of a Mesh modeling blob like physics:
-	We decided to keep separate implementations of the blob. The initial version upon load implements a rigid body simulation of a blob responding to collision with the border of the canvas. The second version implements a blob with spring forces acting upon it. You can switch between versions by pressing the left or right key on your keyboard. 
+	We decided to keep separate implementations of the blob. The initial version upon load implements a blob with spring forces acting upon it. The second version implements a rigid body simulation of a blob responding to collision with the border of the canvas. You can switch between versions by pressing the left or right key on your keyboard. 
 	
 	Our main files are:
 	CSC385---Bouncing_2D_Mesh/
