@@ -15,7 +15,7 @@ While attempting to render a Mesh that models blob like physics, we created the 
 
 1.  Clone the repo:
 
-        git clone https://github.com/shinellm/CSC385---Bouncing_2D_Mesh.git
+        git clone https://github.com/shinellm/CSC385_Bouncing_2D_Mesh.git
 
 2.  Use the WebStorm editor to open our project. WebStorm can be downloaded from this link: https://www.jetbrains.com/webstorm/. NOTE: You can also use your prefered Javascript editor, but the project was originally built and ran in WebStorm.
 
